@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "prendas_pedidos",
+  "info": {
+    "singularName": "prenda-pedido",
+    "pluralName": "prendas-pedidos",
+    "displayName": "prenda_pedido"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "categoria_prenda": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::categoria-prenda.categoria-prenda",
+      "inversedBy": "prenda_pedidos"
+    },
+    "servicios": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::servicio.servicio",
+      "inversedBy": "prenda_pedidos"
+    },
+    "pedido": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::pedido.pedido",
+      "inversedBy": "prenda"
+    },
+    "cantidad": {
+      "type": "integer"
+    },
+    "observaciones": {
+      "type": "text"
+    },
+    "subtotal": {
+      "type": "decimal",
+      "required": true
+    }
+  }
+}

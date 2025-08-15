@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "categorias_prendas",
+  "info": {
+    "singularName": "categoria-prenda",
+    "pluralName": "categorias-prendas",
+    "displayName": "categoria_prenda"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true
+    },
+    "descripcion": {
+      "type": "text"
+    },
+    "precio_base": {
+      "type": "decimal"
+    },
+    "activa": {
+      "type": "boolean",
+      "default": true
+    },
+    "prenda_pedidos": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::prenda-pedido.prenda-pedido",
+      "mappedBy": "categoria_prenda"
+    }
+  }
+}

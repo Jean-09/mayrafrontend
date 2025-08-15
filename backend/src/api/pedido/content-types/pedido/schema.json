@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pedidos",
+  "info": {
+    "singularName": "pedido",
+    "pluralName": "pedidos",
+    "displayName": "pedido"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "sucursal": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sucursal.sucursal",
+      "inversedBy": "pedidos"
+    },
+    "numero_pedido": {
+      "type": "text",
+      "unique": true
+    },
+    "fecha": {
+      "type": "datetime"
+    },
+    "estado": {
+      "type": "enumeration",
+      "enum": [
+        "En proceso",
+        "En camino",
+        "Entregado"
+      ]
+    },
+    "total": {
+      "type": "decimal"
+    },
+    "observaciones": {
+      "type": "text"
+    },
+    "cliente_nombre": {
+      "type": "string"
+    },
+    "cliente_telefono": {
+      "type": "string"
+    },
+    "fehca_entrega": {
+      "type": "datetime"
+    },
+    "prenda": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::prenda-pedido.prenda-pedido",
+      "mappedBy": "pedido"
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "pedidos"
+    }
+  }
+}

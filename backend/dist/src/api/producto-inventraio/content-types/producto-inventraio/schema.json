@@ -1,0 +1,38 @@
+{
+    "kind": "collectionType",
+    "collectionName": "productos_inventraios",
+    "info": {
+        "singularName": "producto-inventraio",
+        "pluralName": "productos-inventraios",
+        "displayName": "producto_inventraio"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "Nombre": {
+            "type": "string",
+            "required": true,
+            "unique": true
+        },
+        "descripcion": {
+            "type": "text"
+        },
+        "unidad_medida": {
+            "type": "string",
+            "required": false,
+            "unique": false
+        },
+        "stock_minimo": {
+            "type": "integer"
+        },
+        "activo": {
+            "type": "boolean",
+            "default": true
+        },
+        "categoria": {
+            "type": "string"
+        }
+    }
+}

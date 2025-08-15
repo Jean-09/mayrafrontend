@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "servicios",
+  "info": {
+    "singularName": "servicio",
+    "pluralName": "servicios",
+    "displayName": "servicio"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string"
+    },
+    "descripcion": {
+      "type": "text"
+    },
+    "precio_adicional": {
+      "type": "decimal",
+      "required": true
+    },
+    "activo": {
+      "type": "boolean",
+      "default": true
+    },
+    "prenda_pedidos": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::prenda-pedido.prenda-pedido",
+      "mappedBy": "servicios"
+    }
+  }
+}

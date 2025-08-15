@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "inventarios",
+  "info": {
+    "singularName": "inventario",
+    "pluralName": "inventarios",
+    "displayName": "inventario"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "sucursal": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sucursal.sucursal",
+      "inversedBy": "inventarios"
+    },
+    "producto": {
+      "type": "string",
+      "required": true
+    },
+    "cantidad": {
+      "type": "integer"
+    },
+    "tipo_movimiento": {
+      "type": "enumeration",
+      "enum": [
+        "Entrada ",
+        "Salida"
+      ]
+    },
+    "fecha": {
+      "type": "datetime"
+    },
+    "observaciones": {
+      "type": "text"
+    },
+    "precio_unitario": {
+      "type": "decimal"
+    }
+  }
+}
