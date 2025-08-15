@@ -16,11 +16,12 @@
 <ion-content [fullscreen]="true">
   <div class="inventario-container">
     <!-- Selector de sucursal para admin -->
-    <div class="sucursal-selector" *ngIf="currentUser?.rol === 'admin'">
+    <div class="sucursal-selector" *ngIf="currentUser?.role.name === 'admin'">
       <ion-item>
         <ion-label>Ver inventario de:</ion-label>
         <ion-select [(ngModel)]="selectedSucursal" (ionChange)="onSucursalChange()" placeholder="Seleccionar sucursal">
-          <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.id">
+          <ion-select-option value="">Todas las sucursales</ion-select-option>
+          <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.documentId">
             {{ sucursal.nombre }}
           </ion-select-option>
         </ion-select>
@@ -38,9 +39,6 @@
         <ion-segment-button value="resumen">
           <ion-label>Resumen</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="movimientos">
-          <ion-label>Movimientos</ion-label>
-        </ion-segment-button>
       </ion-segment>
     </div>
 
@@ -50,9 +48,9 @@
         <div class="resumen-card" *ngFor="let item of resumenInventario">
           <div class="item-info">
             <h3>{{ item.producto }}</h3>
-            <p>Cantidad: {{ item.cantidad_total }}</p>
+            <p>Cantidad: {{ item.cantidad }}</p>
             <p class="last-movement">
-              Último movimiento: {{ item.ultimo_movimiento | date:'short' }}
+              Último movimiento: {{ item.fecha | date:'short' }}
             </p>
           </div>
           <div class="item-actions">
@@ -60,14 +58,14 @@
               fill="clear" 
               color="success" 
               size="small"
-              (click)="openMovimientoModal(item.producto, 'entrada')">
+              (click)="openMovimientoModal(item, 'entrada')">
               <ion-icon name="arrow-up-outline"></ion-icon>
             </ion-button>
             <ion-button 
               fill="clear" 
               color="danger" 
               size="small"
-              (click)="openMovimientoModal(item.producto, 'salida')">
+              (click)="openMovimientoModal(item, 'salida')">
               <ion-icon name="arrow-down-outline"></ion-icon>
             </ion-button>
           </div>
@@ -75,27 +73,7 @@
       </div>
     </div>
 
-    <!-- Movimientos -->
-    <div class="movimientos-section" *ngIf="selectedSegment === 'movimientos'">
-      <div class="movimientos-list">
-        <div class="movimiento-item" *ngFor="let movimiento of movimientos">
-          <div class="movimiento-info">
-            <h4>{{ movimiento.producto }}</h4>
-            <p>{{ movimiento.fecha | date:'short' }}</p>
-            <p *ngIf="currentUser?.rol === 'admin'">{{ movimiento.sucursal.nombre }}</p>
-            <p *ngIf="movimiento.observaciones">{{ movimiento.observaciones }}</p>
-          </div>
-          <div class="movimiento-details">
-            <ion-badge 
-              [color]="movimiento.tipo_movimiento === 'entrada' ? 'success' : 'danger'">
-              {{ movimiento.tipo_movimiento === 'entrada' ? 'Entrada' : 'Salida' }}
-            </ion-badge>
-            <p class="cantidad">{{ movimiento.cantidad }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
+   
     <!-- Estado vacío -->
     <div class="empty-state" *ngIf="getEmptyState()">
       <ion-icon name="cube-outline" size="large"></ion-icon>

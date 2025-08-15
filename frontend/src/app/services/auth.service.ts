@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { User, LoginCredentials, AuthResponse } from '../models/user.model';
-import axios from 'axios';
+import axios, {AxiosHeaders} from 'axios';
 import { environment } from 'src/environments/environment.prod';
 import { Storage } from '@ionic/storage-angular';
 
@@ -11,7 +11,7 @@ import { Storage } from '@ionic/storage-angular';
 export class AuthService {
   private url = environment.urlapi;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser = this.currentUserSubject.asObservable();
+  public currentUser = this.currentUserSubject;
 
   constructor(private storage: Storage) {
     this.loadUserFromStorage();
@@ -45,14 +45,10 @@ export class AuthService {
   //   );
   }
 
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.currentUserSubject.next(null);
-  }
+ 
 
-  getUser(): Observable<User | null> {
-    return this.currentUser;
+  getUser(){
+    // return this.currentUser;
   }
 
   isAuthenticated(): boolean {
@@ -76,13 +72,13 @@ export class AuthService {
     return user.sucursal?.id === sucursalId;
   }
 
-  private setSession(authResponse: AuthResponse): void {
+  private setSession(authResponse: AuthResponse){
     localStorage.setItem('token', authResponse.jwt);
     localStorage.setItem('user', JSON.stringify(authResponse.user));
     this.currentUserSubject.next(authResponse.user);
   }
 
-  private loadUserFromStorage(): void {
+  private loadUserFromStorage(){
     const userData = localStorage.getItem('user');
     if (userData) {
       this.currentUserSubject.next(JSON.parse(userData));

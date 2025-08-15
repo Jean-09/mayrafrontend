@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-title>{{ isEditing ? 'Editar Pedido' : 'Nuevo Pedido' }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="guardarPedido()" [disabled]="!isFormValid()">
+      <ion-button (click)="guardarPedido()" >
         <ion-icon name="save-outline"></ion-icon>
         Guardar
       </ion-button>
@@ -94,7 +94,7 @@
                 [name]="'categoria_' + i"
                 [compareWith]="compareCategorias"
                 (ionChange)="calcularSubtotal(i)">
-                <ion-select-option *ngFor="let categoria of categorias" [value]="categoria">
+                <ion-select-option *ngFor="let categoria of categorias" [value]="categoria.documentId">
                   {{ categoria.nombre }} - ${{ categoria.precio_base.toLocaleString() }}
                 </ion-select-option>
               </ion-select>
@@ -108,7 +108,7 @@
                 multiple="true"
                 [compareWith]="compareServicios"
                 (ionChange)="calcularSubtotal(i)">
-                <ion-select-option *ngFor="let servicio of servicios" [value]="servicio">
+                <ion-select-option *ngFor="let servicio of servicios" [value]="servicio.documentId">
                   {{ servicio.nombre }} - ${{ servicio.precio_adicional.toLocaleString() }}
                 </ion-select-option>
               </ion-select>

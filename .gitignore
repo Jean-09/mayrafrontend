@@ -1,8 +1,8 @@
-mayrafrontend/node_modules/
-mayrafrontend/.angular/
-mayrafrontend/www/
-mayrafrontend/.sass-cache/
-mayrafrontend/.env
+frontend/node_modules/
+frontend/.angular/
+frontend/www/
+frontend/.sass-cache/
+frontend/.env
 
 backend/node_modules/
 backend/.cache

@@ -26,9 +26,11 @@
     },
     "tipo_movimiento": {
       "type": "enumeration",
+      "default": "Recién agregado",
       "enum": [
-        "Entrada ",
-        "Salida"
+        "Entrada",
+        "Salida",
+        "Recién agregado"
       ]
     },
     "fecha": {

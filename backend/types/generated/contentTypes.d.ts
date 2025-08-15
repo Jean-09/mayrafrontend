@@ -436,7 +436,10 @@ export interface ApiInventarioInventario extends Struct.CollectionTypeSchema {
     producto: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     sucursal: Schema.Attribute.Relation<'manyToOne', 'api::sucursal.sucursal'>;
-    tipo_movimiento: Schema.Attribute.Enumeration<['Entrada ', 'Salida']>;
+    tipo_movimiento: Schema.Attribute.Enumeration<
+      ['Entrada', 'Salida', 'Reci\u00E9n agregado']
+    > &
+      Schema.Attribute.DefaultTo<'Reci\u00E9n agregado'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -463,7 +466,7 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
       ['En proceso', 'En camino', 'Entregado']
     >;
     fecha: Schema.Attribute.DateTime;
-    fehca_entrega: Schema.Attribute.DateTime;
+    fecha_entrega: Schema.Attribute.DateTime;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -627,7 +630,9 @@ export interface ApiSucursalSucursal extends Struct.CollectionTypeSchema {
       'api::sucursal.sucursal'
     > &
       Schema.Attribute.Private;
-    nombre: Schema.Attribute.String & Schema.Attribute.Required;
+    nombre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
     pedidos: Schema.Attribute.Relation<'oneToMany', 'api::pedido.pedido'>;
     publishedAt: Schema.Attribute.DateTime;
     telefono: Schema.Attribute.String;

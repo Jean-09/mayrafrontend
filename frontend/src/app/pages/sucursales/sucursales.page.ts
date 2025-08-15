@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { User, Sucursal } from '../../models/user.model';
+import { Storage } from '@ionic/storage-angular';
+import { AlertController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-sucursales',
@@ -9,8 +13,8 @@ import { User, Sucursal } from '../../models/user.model';
   standalone: false
 })
 export class SucursalesPage implements OnInit {
-  currentUser: User | null = null;
-  sucursales: Sucursal[] = [];
+  currentUser: any;
+  sucursales: any[] = [];
   empleados: User[] = [];
   
   showAddModal = false;
@@ -24,29 +28,60 @@ export class SucursalesPage implements OnInit {
     direccion: ''
   };
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private alertController: AlertController,
+    private storage: Storage,
+    private router: Router,
+    private api: ApiService
+  ) {}
 
-  ngOnInit() {
-    this.loadUserData();
+  async ngOnInit() {
+    // this.loadUserData();
+    
+    await this.storage.create();
+    await this.getToken();
+    // await this.loadUserData();
     this.loadSucursales();
     this.loadEmpleados();
+
+    const tokenData = await this.storage.get('token');
+    console.log('este es mis datos del token', tokenData);
+
+    if (tokenData?.token && tokenData?.user) {
+      this.currentUser = tokenData.user;
+      console.log('este es el usuario', this.currentUser);
+    } else {
+      this.mostrarAlerta('Error', 'Intenta iniciar sesión nuevamente');
+      this.router.navigate(['/login']);
+    }
   }
 
-  loadUserData() {
-    this.authService.getUser().subscribe(user => {
-      this.currentUser = user;
-    });
+  token = '';
+
+  async getToken() {
+    const tokenData = await this.storage.get('token');
+    console.log('este es el data del token', tokenData)
+    if (tokenData?.token && tokenData?.user) {
+      this.token = tokenData.token;
+      console.log('token:', this.token);
+    } else {
+      this.mostrarAlerta('Error', 'Intenta iniciar sesión nuevamente');
+      this.router.navigate(['/login']);
+    }
   }
 
-  loadSucursales() {
-    // Simulación de sucursales
-    this.sucursales = [
-      { id: 1, nombre: 'Sucursal Centro', direccion: 'Calle Principal 123, Centro' },
-      { id: 2, nombre: 'Sucursal Norte', direccion: 'Avenida Norte 456, Zona Norte' },
-      { id: 3, nombre: 'Sucursal Sur', direccion: 'Carrera Sur 789, Zona Sur' },
-      { id: 4, nombre: 'Sucursal Oriente', direccion: 'Calle Oriente 101, Zona Oriental' }
-    ];
+sucursalesConEstadisticas: any[] = []; // Nueva propiedad para almacenar sucursales con stats
+
+async loadSucursales() {
+  try {
+    const res = await this.api.getSucursales(this.token);
+    this.sucursales = res;
+    console.log('Sucursales cargadas:', this.sucursales);
+  } catch (error) {
+    console.error('Error cargando sucursales:', error);
   }
+}
 
   loadEmpleados() {
     // Simulación de empleados
@@ -96,17 +131,29 @@ export class SucursalesPage implements OnInit {
     ];
   }
 
-  getSucursalStats(sucursalId: number) {
-    // Simulación de estadísticas por sucursal
-    const stats = {
-      1: { pedidos: 145, empleados: 2, ventas: 2450000 },
-      2: { pedidos: 98, empleados: 2, ventas: 1890000 },
-      3: { pedidos: 67, empleados: 1, ventas: 1230000 },
-      4: { pedidos: 23, empleados: 0, ventas: 450000 }
-    };
-    
-    return stats[sucursalId as keyof typeof stats] || { pedidos: 0, empleados: 0, ventas: 0 };
+getSucursalStats(sucursalId: number) {
+  const sucursal = this.sucursales.find(s => s.id === sucursalId);
+  
+  if (!sucursal) {
+    return { pedidos: 0, empleados: 0, ventas: 0 };
   }
+
+  return {
+    pedidos: sucursal.pedidos?.length || 0,       // Mantén el nombre 'pedidos'
+    empleados: sucursal.users?.length || 0,       // Mantén el nombre 'empleados'
+    ventas: this.calcularVentas(sucursal.pedidos) // Mantén el nombre 'ventas'
+  };
+}
+
+private calcularVentas(pedidos: any[] = []): number {
+  return pedidos.reduce((total, pedido) => total + (pedido.total || 0), 0);
+}
+
+calcularVentasTotales(pedidos: any[]): number {
+  return pedidos.reduce((total, pedido) => {
+    return total + (pedido.total || 0);
+  }, 0);
+}
 
   getEmpleadosSucursal(sucursalId: number): User[] {
     return this.empleados.filter(empleado => empleado.sucursal?.id === sucursalId);
@@ -163,5 +210,14 @@ export class SucursalesPage implements OnInit {
       nombre: '',
       direccion: ''
     };
+  }
+
+    async mostrarAlerta(titulo: string, mensaje: string) {
+    const alert = await this.alertController.create({
+      header: titulo,
+      message: mensaje,
+      buttons: ['Aceptar']
+    });
+    await alert.present();
   }
 }

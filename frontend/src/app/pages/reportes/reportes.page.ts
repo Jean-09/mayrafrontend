@@ -105,14 +105,14 @@ export class ReportesPage implements OnInit {
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    this.loadUserData();
+    // this.loadUserData();
   }
 
-  loadUserData() {
-    this.authService.getUser().subscribe(user => {
-      this.currentUser = user;
-    });
-  }
+  // loadUserData() {
+  //   this.authService.getUser().subscribe(user => {
+  //     this.currentUser = user;
+  //   });
+  // }
 
   getPerformanceColor(performance: number): string {
     if (performance >= 90) return 'success';

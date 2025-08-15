@@ -44,7 +44,7 @@
         "cliente_telefono": {
             "type": "string"
         },
-        "fehca_entrega": {
+        "fecha_entrega": {
             "type": "datetime"
         },
         "prenda": {

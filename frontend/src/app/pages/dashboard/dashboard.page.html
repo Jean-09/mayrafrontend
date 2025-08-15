@@ -69,7 +69,7 @@
           expand="block" 
           fill="outline" 
           (click)="navigateTo('/sucursales')"
-          *ngIf="currentUser?.rol === 'admin'">
+          *ngIf="currentUser?.role.name === 'admin'">
           <ion-icon name="business-outline" slot="start"></ion-icon>
           Sucursales
         </ion-button>
@@ -78,7 +78,7 @@
           expand="block" 
           fill="outline" 
           (click)="navigateTo('/reportes')"
-          *ngIf="currentUser?.rol === 'admin' || currentUser?.rol === 'central'">
+          *ngIf="currentUser?.role.name === 'admin' || currentUser?.role.name === 'central'">
           <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
           Reportes
         </ion-button>
@@ -93,11 +93,11 @@
       </div>
 
       <div class="orders-list">
-        <div class="order-item" *ngFor="let pedido of pedidosRecientes">
+        <div class="order-item" *ngFor="let pedido of pedidosRecientes" (click)="verDetalle(pedido)">
           <div class="order-info">
             <h4>Pedido #{{ pedido.id }}</h4>
             <p>{{ pedido.fecha | date:'short' }}</p>
-            <p *ngIf="currentUser?.rol === 'admin'">{{ pedido.sucursal.nombre }}</p>
+            <p *ngIf="currentUser?.role.name === 'admin'">{{ pedido.sucursal.nombre }}</p>
           </div>
           <div class="order-status">
             <ion-badge [color]="getStatusColor(pedido.estado)">
