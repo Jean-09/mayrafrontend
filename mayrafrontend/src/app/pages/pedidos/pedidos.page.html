@@ -1,0 +1,157 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Gestión de Pedidos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showFilterModal = true">
+        <ion-icon name="filter-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="pedidos-container">
+    <!-- FAB para nuevo pedido -->
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="currentUser?.rol !== 'central'">
+      <ion-fab-button (click)="crearPedido()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+    <!-- Selector de sucursal para admin -->
+    <div class="sucursal-selector" *ngIf="currentUser?.rol === 'admin' || currentUser?.rol === 'central'">
+      <ion-item>
+        <ion-label>Ver pedidos de:</ion-label>
+        <ion-select [(ngModel)]="selectedSucursal" (ionChange)="onSucursalChange()" placeholder="Todas las sucursales">
+          <ion-select-option value="">Todas las sucursales</ion-select-option>
+          <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.id">
+            {{ sucursal.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <!-- Filtros aplicados -->
+    <div class="filters-applied" *ngIf="hasActiveFilters()">
+      <div class="filter-chips">
+        <ion-chip *ngIf="filtros.estado" (click)="clearFilter('estado')">
+          <ion-label>{{ filtros.estado }}</ion-label>
+          <ion-icon name="close-circle"></ion-icon>
+        </ion-chip>
+        <ion-chip *ngIf="filtros.fecha_inicio" (click)="clearFilter('fecha')">
+          <ion-label>{{ filtros.fecha_inicio | date:'short' }} - {{ filtros.fecha_fin | date:'short' }}</ion-label>
+          <ion-icon name="close-circle"></ion-icon>
+        </ion-chip>
+        <ion-chip *ngIf="filtros.sucursal && currentUser?.rol === 'admin'" (click)="clearFilter('sucursal')">
+          <ion-label>{{ getSucursalName(filtros.sucursal) }}</ion-label>
+          <ion-icon name="close-circle"></ion-icon>
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Lista de pedidos -->
+    <div class="pedidos-list">
+      <div class="pedido-card" *ngFor="let pedido of pedidos" (click)="verDetalle(pedido.id)">
+        <div class="pedido-header">
+          <div class="pedido-info">
+            <h3>Pedido #{{ pedido.id }}</h3>
+            <p>{{ pedido.fecha | date:'short' }}</p>
+            <p *ngIf="currentUser?.rol === 'admin' || currentUser?.rol === 'central'">
+              {{ pedido.sucursal.nombre }}
+            </p>
+          </div>
+          <div class="pedido-status">
+            <ion-badge [color]="getStatusColor(pedido.estado)">
+              {{ pedido.estado }}
+            </ion-badge>
+            <p class="pedido-total">${{ pedido.total.toLocaleString() }}</p>
+          </div>
+        </div>
+        
+        <div class="pedido-details">
+          <p>{{ pedido.prendas.length }} prenda(s)</p>
+          <p *ngIf="pedido.observaciones">{{ pedido.observaciones }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" *ngIf="pedidos.length === 0">
+      <ion-icon name="receipt-outline" size="large"></ion-icon>
+      <h3>No hay pedidos</h3>
+      <p>Crea tu primer pedido para comenzar</p>
+      <ion-button fill="outline" (click)="crearPedido()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Crear Pedido
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Modal de filtros -->
+  <ion-modal [isOpen]="showFilterModal" (didDismiss)="showFilterModal = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Filtros</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="showFilterModal = false">
+              <ion-icon name="close"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+        <div class="filter-content">
+          <ion-item>
+            <ion-label>Estado</ion-label>
+            <ion-select [(ngModel)]="filtros.estado" placeholder="Seleccionar estado">
+              <ion-select-option value="">Todos</ion-select-option>
+              <ion-select-option value="En proceso">En proceso</ion-select-option>
+              <ion-select-option value="En camino">En camino</ion-select-option>
+              <ion-select-option value="Entregado">Entregado</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Fecha Inicio</ion-label>
+            <ion-datetime 
+              [(ngModel)]="filtros.fecha_inicio" 
+              presentation="date">
+            </ion-datetime>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Fecha Fin</ion-label>
+            <ion-datetime 
+              [(ngModel)]="filtros.fecha_fin" 
+              presentation="date">
+            </ion-datetime>
+          </ion-item>
+
+          <ion-item *ngIf="currentUser?.rol === 'admin'">
+            <ion-label>Sucursal</ion-label>
+            <ion-select [(ngModel)]="filtros.sucursal" placeholder="Seleccionar sucursal">
+              <ion-select-option value="">Todas</ion-select-option>
+              <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.id">
+                {{ sucursal.nombre }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <div class="filter-actions">
+            <ion-button expand="block" (click)="applyFilters()">
+              Aplicar Filtros
+            </ion-button>
+            <ion-button expand="block" fill="clear" (click)="clearAllFilters()">
+              Limpiar Filtros
+            </ion-button>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

@@ -1,0 +1,112 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Panel de Control</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        Salir
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="dashboard-container">
+    <!-- Información del usuario -->
+    <div class="user-info">
+      <h2>Bienvenido, {{ currentUser?.nombre }}</h2>
+      <p>{{ getRoleText(currentUser?.rol) }}</p>
+      <p *ngIf="currentUser?.sucursal">{{ currentUser?.sucursal?.nombre || 'No especificado'}}</p>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <ion-icon name="receipt-outline" color="primary"></ion-icon>
+        <h3>{{ metrics.totalPedidos }}</h3>
+        <p>Pedidos Totales</p>
+      </div>
+
+      <div class="metric-card">
+        <ion-icon name="hourglass-outline" color="warning"></ion-icon>
+        <h3>{{ metrics.pedidosEnProceso }}</h3>
+        <p>En Proceso</p>
+      </div>
+
+      <div class="metric-card">
+        <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+        <h3>{{ metrics.pedidosEntregados }}</h3>
+        <p>Entregados Hoy</p>
+      </div>
+
+      <div class="metric-card">
+        <ion-icon name="cash-outline" color="secondary"></ion-icon>
+        <h3>${{ metrics.ventasHoy.toLocaleString() }}</h3>
+        <p>Ventas Hoy</p>
+      </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="quick-actions">
+      <h3>Acciones Rápidas</h3>
+      <div class="actions-grid">
+        <ion-button expand="block" fill="outline" (click)="navigateTo('/pedidos')" *ngIf="currentUser?.rol !== 'central'">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Nuevo Pedido
+        </ion-button>
+
+        <ion-button expand="block" fill="outline" (click)="navigateTo('/pedidos')">
+          <ion-icon name="list-outline" slot="start"></ion-icon>
+          Ver Pedidos
+        </ion-button>
+
+        <ion-button expand="block" fill="outline" (click)="navigateTo('/inventario')" *ngIf="currentUser?.rol !== 'central'">
+          <ion-icon name="cube-outline" slot="start"></ion-icon>
+          Inventario
+        </ion-button>
+
+        <ion-button 
+          expand="block" 
+          fill="outline" 
+          (click)="navigateTo('/sucursales')"
+          *ngIf="currentUser?.rol === 'admin'">
+          <ion-icon name="business-outline" slot="start"></ion-icon>
+          Sucursales
+        </ion-button>
+
+        <ion-button 
+          expand="block" 
+          fill="outline" 
+          (click)="navigateTo('/reportes')"
+          *ngIf="currentUser?.rol === 'admin' || currentUser?.rol === 'central'">
+          <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
+          Reportes
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Pedidos recientes -->
+    <div class="recent-orders">
+      <div class="section-header">
+        <h3>Pedidos Recientes</h3>
+        <ion-button fill="clear" (click)="navigateTo('/pedidos')">Ver todos</ion-button>
+      </div>
+
+      <div class="orders-list">
+        <div class="order-item" *ngFor="let pedido of pedidosRecientes">
+          <div class="order-info">
+            <h4>Pedido #{{ pedido.id }}</h4>
+            <p>{{ pedido.fecha | date:'short' }}</p>
+            <p *ngIf="currentUser?.rol === 'admin'">{{ pedido.sucursal.nombre }}</p>
+          </div>
+          <div class="order-status">
+            <ion-badge [color]="getStatusColor(pedido.estado)">
+              {{ pedido.estado }}
+            </ion-badge>
+            <p class="order-total">${{ pedido.total.toLocaleString() }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

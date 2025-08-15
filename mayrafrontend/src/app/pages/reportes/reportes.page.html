@@ -1,0 +1,128 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Reportes y Estadísticas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="reportes-container">
+    <!-- Resumen General -->
+    <div class="resumen-general">
+      <h3>Resumen General del Sistema</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <ion-icon name="business-outline" color="primary"></ion-icon>
+          <h4>{{ totalSucursales }}</h4>
+          <p>Sucursales Activas</p>
+        </div>
+        <div class="stat-card">
+          <ion-icon name="receipt-outline" color="secondary"></ion-icon>
+          <h4>{{ totalPedidos }}</h4>
+          <p>Pedidos del Mes</p>
+        </div>
+        <div class="stat-card">
+          <ion-icon name="cash-outline" color="success"></ion-icon>
+          <h4>${{ totalVentas.toLocaleString() }}</h4>
+          <p>Ventas del Mes</p>
+        </div>
+        <div class="stat-card">
+          <ion-icon name="people-outline" color="warning"></ion-icon>
+          <h4>{{ totalEmpleados }}</h4>
+          <p>Empleados Activos</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas por Sucursal -->
+    <div class="estadisticas-sucursales">
+      <h3>Rendimiento por Sucursal</h3>
+      <div class="sucursales-stats">
+        <div class="sucursal-stat-card" *ngFor="let sucursal of sucursalesStats">
+          <div class="sucursal-header">
+            <h4>{{ sucursal.nombre }}</h4>
+            <ion-badge [color]="getPerformanceColor(sucursal.performance)">
+              {{ sucursal.performance }}%
+            </ion-badge>
+          </div>
+          <div class="sucursal-metrics">
+            <div class="metric">
+              <span class="label">Pedidos:</span>
+              <span class="value">{{ sucursal.pedidos }}</span>
+            </div>
+            <div class="metric">
+              <span class="label">Ventas:</span>
+              <span class="value">${{ sucursal.ventas.toLocaleString() }}</span>
+            </div>
+            <div class="metric">
+              <span class="label">Empleados:</span>
+              <span class="value">{{ sucursal.empleados }}</span>
+            </div>
+            <div class="metric">
+              <span class="label">Inventario:</span>
+              <span class="value">{{ sucursal.inventario }} items</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estados de Pedidos -->
+    <div class="estados-pedidos">
+      <h3>Estado de Pedidos</h3>
+      <div class="estados-grid">
+        <div class="estado-card proceso">
+          <ion-icon name="hourglass-outline"></ion-icon>
+          <h4>{{ estadosPedidos.enProceso }}</h4>
+          <p>En Proceso</p>
+        </div>
+        <div class="estado-card camino">
+          <ion-icon name="car-outline"></ion-icon>
+          <h4>{{ estadosPedidos.enCamino }}</h4>
+          <p>En Camino</p>
+        </div>
+        <div class="estado-card entregado">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <h4>{{ estadosPedidos.entregados }}</h4>
+          <p>Entregados</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventario Crítico -->
+    <div class="inventario-critico" *ngIf="inventarioCritico.length > 0">
+      <h3>Inventario Crítico (Stock Bajo)</h3>
+      <div class="critico-list">
+        <div class="critico-item" *ngFor="let item of inventarioCritico">
+          <div class="item-info">
+            <h4>{{ item.producto }}</h4>
+            <p>{{ item.sucursal }}</p>
+          </div>
+          <div class="item-cantidad">
+            <ion-badge color="danger">{{ item.cantidad }} restantes</ion-badge>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empleados por Sucursal -->
+    <div class="empleados-sucursal" *ngIf="currentUser?.rol === 'admin'">
+      <h3>Distribución de Empleados</h3>
+      <div class="empleados-distribution">
+        <div class="distribution-item" *ngFor="let item of empleadosDistribution">
+          <div class="distribution-info">
+            <h4>{{ item.sucursal }}</h4>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="item.percentage"></div>
+            </div>
+          </div>
+          <div class="distribution-count">
+            <span>{{ item.empleados }} empleados</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

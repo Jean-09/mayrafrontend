@@ -1,0 +1,171 @@
+.inventario-container {
+  padding: 20px;
+}
+
+.sucursal-selector {
+  background: white;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sucursal-info {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  
+  h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+}
+
+.filters-section {
+  margin-bottom: 20px;
+}
+
+.resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+}
+
+.resumen-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .item-info {
+    flex: 1;
+    
+    h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+      font-size: 18px;
+    }
+    
+    p {
+      margin: 5px 0;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .last-movement {
+      color: #999;
+      font-size: 12px;
+    }
+  }
+  
+  .item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+.movimientos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.movimiento-item {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .movimiento-info {
+    flex: 1;
+    
+    h4 {
+      margin: 0 0 5px 0;
+      color: #333;
+      font-size: 16px;
+    }
+    
+    p {
+      margin: 2px 0;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+  
+  .movimiento-details {
+    text-align: right;
+    
+    .cantidad {
+      margin: 5px 0 0 0;
+      font-weight: bold;
+      color: #333;
+      font-size: 18px;
+    }
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  
+  ion-icon {
+    color: #ccc;
+    margin-bottom: 20px;
+  }
+  
+  h3 {
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    color: #999;
+  }
+}
+
+.modal-content {
+  padding: 20px;
+}
+
+.modal-actions {
+  margin-top: 30px;
+}
+
+ion-segment {
+  --background: #f0f0f0;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .inventario-container {
+    padding: 15px;
+  }
+  
+  .resumen-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .resumen-card,
+  .movimiento-item {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    
+    .item-actions,
+    .movimiento-details {
+      text-align: center;
+    }
+  }
+}

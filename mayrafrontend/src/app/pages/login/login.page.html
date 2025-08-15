@@ -1,0 +1,60 @@
+<ion-content [fullscreen]="true">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="logo-section">
+        <ion-icon name="water-outline" size="large" color="primary"></ion-icon>
+        <h1>Sistema de Lavandería</h1>
+        <p>Gestión de Pedidos por Sucursal</p>
+      </div>
+
+      <form #loginForm="ngForm" (ngSubmit)="onLogin()" novalidate>
+        <ion-item>
+          <ion-label position="floating">Correo electrónico</ion-label>
+          <ion-input 
+            type="email" 
+            [(ngModel)]="credentials.correo" 
+            name="correo"
+            required
+            #correo="ngModel">
+          </ion-input>
+        </ion-item>
+        <div class="error-message" *ngIf="correo.invalid && correo.touched">
+          El correo es obligatorio
+        </div>
+
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input 
+            type="password" 
+            [(ngModel)]="credentials.password" 
+            name="contraseña"
+            required
+            #contraseña="ngModel">
+          </ion-input>
+        </ion-item>
+
+
+        <ion-button
+              expand="block"
+              size="large"
+              (click)="login()"
+              class="login-button">
+              <ion-icon name="log-in" slot="start"></ion-icon>
+              
+              {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+            </ion-button>
+      </form>
+
+      <div class="demo-credentials">
+        <h3>Credenciales de prueba:</h3>
+        <p><strong>Admin:</strong> admin lavanderia.com / admin123</p>
+        <p><strong>Empleado:</strong> empleado sucursal1.com / emp123</p>
+        <p><strong>Central:</strong> central lavanderia.com / central123</p>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+    </div>
+  </div>
+</ion-content>

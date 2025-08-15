@@ -1,0 +1,153 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEditing ? 'Editar Pedido' : 'Nuevo Pedido' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="guardarPedido()" [disabled]="!isFormValid()">
+        <ion-icon name="save-outline"></ion-icon>
+        Guardar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <form #pedidoForm="ngForm" novalidate>
+    <div class="form-container">
+      <!-- Información del pedido -->
+      <div class="form-section">
+        <h3>Información del Pedido</h3>
+        
+        <ion-item>
+          <ion-label position="floating">Fecha</ion-label>
+          <ion-datetime 
+            [(ngModel)]="pedido.fecha" 
+            name="fecha"
+            presentation="date"
+            [disabled]="isEditing">
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Estado</ion-label>
+          <ion-select 
+            [(ngModel)]="pedido.estado" 
+            name="estado"
+            [disabled]="currentUser?.rol === 'empleado'">
+            <ion-select-option value="En proceso">En proceso</ion-select-option>
+            <ion-select-option value="En camino">En camino</ion-select-option>
+            <ion-select-option value="Entregado">Entregado</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item *ngIf="currentUser?.rol === 'admin'">
+          <ion-label>Sucursal</ion-label>
+          <ion-select 
+            [(ngModel)]="pedido.sucursal" 
+            name="sucursal"
+            [compareWith]="compareSucursales">
+            <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal">
+              {{ sucursal.nombre }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Observaciones Generales</ion-label>
+          <ion-textarea 
+            [(ngModel)]="pedido.observaciones" 
+            name="observaciones"
+            rows="3">
+          </ion-textarea>
+        </ion-item>
+      </div>
+
+      <!-- Prendas -->
+      <div class="form-section">
+        <div class="section-header">
+          <h3>Prendas</h3>
+          <ion-button fill="clear" (click)="agregarPrenda()">
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            Agregar Prenda
+          </ion-button>
+        </div>
+
+        <div class="prendas-list">
+          <div class="prenda-card" *ngFor="let prenda of pedido.prendas; let i = index">
+            <div class="prenda-header">
+              <h4>Prenda {{ i + 1 }}</h4>
+              <ion-button 
+                fill="clear" 
+                color="danger" 
+                size="small"
+                (click)="eliminarPrenda(i)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </div>
+
+            <ion-item>
+              <ion-label>Categoría</ion-label>
+              <ion-select 
+                [(ngModel)]="prenda.categoria" 
+                [name]="'categoria_' + i"
+                [compareWith]="compareCategorias"
+                (ionChange)="calcularSubtotal(i)">
+                <ion-select-option *ngFor="let categoria of categorias" [value]="categoria">
+                  {{ categoria.nombre }} - ${{ categoria.precio_base.toLocaleString() }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-label>Servicios Adicionales</ion-label>
+              <ion-select 
+                [(ngModel)]="prenda.servicios" 
+                [name]="'servicios_' + i"
+                multiple="true"
+                [compareWith]="compareServicios"
+                (ionChange)="calcularSubtotal(i)">
+                <ion-select-option *ngFor="let servicio of servicios" [value]="servicio">
+                  {{ servicio.nombre }} - ${{ servicio.precio_adicional.toLocaleString() }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="floating">Observaciones</ion-label>
+              <ion-textarea 
+                [(ngModel)]="prenda.observaciones" 
+                [name]="'observaciones_' + i"
+                rows="2"
+                placeholder="Manchas, daños, instrucciones especiales...">
+              </ion-textarea>
+            </ion-item>
+
+            <div class="prenda-total">
+              <strong>Subtotal: ${{ prenda.subtotal.toLocaleString() }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-prendas" *ngIf="pedido.prendas.length === 0">
+          <p>No hay prendas agregadas</p>
+          <ion-button fill="outline" (click)="agregarPrenda()">
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            Agregar Primera Prenda
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="total-section">
+        <div class="total-card">
+          <h3>Total del Pedido</h3>
+          <div class="total-amount">
+            ${{ pedido.total.toLocaleString() }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</ion-content>
