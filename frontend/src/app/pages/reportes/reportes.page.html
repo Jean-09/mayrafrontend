@@ -43,18 +43,15 @@
         <div class="sucursal-stat-card" *ngFor="let sucursal of sucursalesStats">
           <div class="sucursal-header">
             <h4>{{ sucursal.nombre }}</h4>
-            <ion-badge [color]="getPerformanceColor(sucursal.performance)">
-              {{ sucursal.performance }}%
-            </ion-badge>
           </div>
           <div class="sucursal-metrics">
             <div class="metric">
               <span class="label">Pedidos:</span>
-              <span class="value">{{ sucursal.pedidos }}</span>
+              <span class="value">{{ sucursal.pedidos.id }}</span>
             </div>
             <div class="metric">
               <span class="label">Ventas:</span>
-              <span class="value">${{ sucursal.ventas.toLocaleString() }}</span>
+              <span class="value">${{ totalVentas}}</span>
             </div>
             <div class="metric">
               <span class="label">Empleados:</span>
@@ -62,7 +59,7 @@
             </div>
             <div class="metric">
               <span class="label">Inventario:</span>
-              <span class="value">{{ sucursal.inventario }} items</span>
+              <span class="value">{{ totalInventario }} items</span>
             </div>
           </div>
         </div>

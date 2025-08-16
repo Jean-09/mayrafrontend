@@ -5,7 +5,7 @@ import json
 url = "http://localhost:1338/api/servicios"
 
 # Token de autenticación
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzU1MjI3ODM1LCJleHAiOjE3NTc4MTk4MzV9.oddTUy_w9pYDZEoc53UW1cl8TQauuC6WxOP7zO8qDCA" # Reemplaza con tu token
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1Mjk0OTI5LCJleHAiOjE3NTc4ODY5Mjl9.CK_JwRfdHQB6hZZ1-zny9tI6vM6TE0XTLw2tMDpv6j8" # Reemplaza con tu token
 
 # Headers para la petición
 headers = {

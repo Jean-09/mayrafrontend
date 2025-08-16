@@ -27,7 +27,8 @@ export class InventarioPage implements OnInit {
   nuevoProducto = {
     producto: '',
     cantidad: 0,
-    observaciones: ''
+    observaciones: '',
+    sucursal:[]
   };
 
   movimientoData = {
@@ -171,7 +172,8 @@ onSucursalChange() {
       this.nuevoProducto = {
         producto: '',
         cantidad: 0,
-        observaciones: ''
+        observaciones: '',
+        sucursal:[]
       };
 
       this.showAddModal = false;

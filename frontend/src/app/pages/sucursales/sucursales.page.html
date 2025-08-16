@@ -24,15 +24,15 @@
           <div class="sucursal-stats">
             <div class="stat-item">
               <ion-icon name="receipt-outline"></ion-icon>
-              <span>{{ getSucursalStats(sucursal.id).pedidos }} pedidos</span>
+              <span>{{ getSucursalStats(sucursal.documentId).pedidos }} pedidos</span>
             </div>
             <div class="stat-item">
               <ion-icon name="people-outline"></ion-icon>
-              <span>{{ getSucursalStats(sucursal.id).empleados }} empleados</span>
+              <span>{{ getSucursalStats(sucursal.documenId).empleados }} empleados</span>
             </div>
             <div class="stat-item">
               <ion-icon name="cash-outline"></ion-icon>
-              <span>${{ getSucursalStats(sucursal.id).ventas.toLocaleString() }}</span>
+              <span>${{ getSucursalStats(sucursal.documentId).ventas.toLocaleString() }}</span>
             </div>
           </div>
         </div>

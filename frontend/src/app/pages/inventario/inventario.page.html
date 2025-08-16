@@ -54,18 +54,10 @@
             </p>
           </div>
           <div class="item-actions">
-            <ion-button 
-              fill="clear" 
-              color="success" 
-              size="small"
-              (click)="openMovimientoModal(item, 'entrada')">
+            <ion-button fill="clear" color="success" size="small" (click)="openMovimientoModal(item, 'entrada')">
               <ion-icon name="arrow-up-outline"></ion-icon>
             </ion-button>
-            <ion-button 
-              fill="clear" 
-              color="danger" 
-              size="small"
-              (click)="openMovimientoModal(item, 'salida')">
+            <ion-button fill="clear" color="danger" size="small" (click)="openMovimientoModal(item, 'salida')">
               <ion-icon name="arrow-down-outline"></ion-icon>
             </ion-button>
           </div>
@@ -73,7 +65,7 @@
       </div>
     </div>
 
-   
+
     <!-- Estado vacío -->
     <div class="empty-state" *ngIf="getEmptyState()">
       <ion-icon name="cube-outline" size="large"></ion-icon>
@@ -106,6 +98,16 @@
           <ion-item>
             <ion-label position="floating">Cantidad Inicial</ion-label>
             <ion-input type="number" [(ngModel)]="nuevoProducto.cantidad"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Ver inventario de:</ion-label>
+            <ion-select [(ngModel)]="nuevoProducto.sucursal" (ionChange)="onSucursalChange()"
+              placeholder="Seleccionar sucursal">
+              <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.documentId">
+                {{ sucursal.nombre }}
+              </ion-select-option>
+            </ion-select>
           </ion-item>
 
           <ion-item>
