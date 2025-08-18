@@ -21,7 +21,18 @@ export class DashboardPage implements OnInit {
     pedidosEntregados: 0,
     ventasHoy: 0
   };
-  pedidosRecientes: Pedido[] = [];
+  pedidosRecientes: any[] = [];
+  showAddUserModal = false;
+  showUserModal = false;
+  showPassword = false;
+
+  nuevoPersonal = {
+    username: '',
+    email: '',
+    password: '',
+    sucursal: [],
+    role: []
+  }
 
   constructor(
     private alertController: AlertController,
@@ -39,6 +50,9 @@ export class DashboardPage implements OnInit {
     await this.getToken();
     // await this.loadUserData();
     await this.loadMetrics();
+    await this.loadSucursales()
+    await this.getUsers()
+    await this.getRoles()
 
     const tokenData = await this.storage.get('token');
     console.log('este es mis datos del token', tokenData);
@@ -54,6 +68,11 @@ export class DashboardPage implements OnInit {
 
   token = '';
 
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+
   async getToken() {
     const tokenData = await this.storage.get('token');
     console.log('este es el data del token', tokenData)
@@ -66,8 +85,73 @@ export class DashboardPage implements OnInit {
     }
   }
 
+  searchTerm: string = '';
+  usersFiltrados: any[] = [];
+  showSearchBar = false;
+
+
+filterUsuarios() {
+  console.log('Término de búsqueda:', this.searchTerm);
+  
+  if (!this.searchTerm || !this.users) {
+    this.usersFiltrados = [...this.users];
+    return;
+  }
+
+  const term = this.searchTerm.toLowerCase();
+  
+  this.usersFiltrados = this.users.filter(u => {
+    // Verificación segura de campos + búsqueda en sucursal.nombre
+    const usernameMatch = u.username?.toLowerCase()?.includes(term) || false;
+    const emailMatch = u.email?.toLowerCase()?.includes(term) || false;
+    const sucursalMatch = u.sucursal?.nombre?.toLowerCase()?.includes(term) || false;
+
+    return usernameMatch || emailMatch || sucursalMatch;
+  });
+
+  console.log('Resultados filtrados:', this.usersFiltrados);
+}
+
   verDetalle(pedido: any) {
     this.router.navigate(['/detalle-pedido', pedido.documentId]);
+  }
+
+  async agregarPersonal() {
+
+    const data = {
+      username: this.nuevoPersonal.username,
+      email: this.nuevoPersonal.email,
+      password: this.nuevoPersonal.password,
+      sucursal: this.nuevoPersonal.sucursal,
+      role: this.nuevoPersonal.role
+    }
+    console.log(data)
+    await this.api.postUser(data, this.token);
+    this.showAddUserModal = false
+  }
+
+  role: any[] = [];
+
+  getRoles() {
+    this.api.getRoles(this.token).then((res) => {
+      this.role = res.data.roles
+      console.log('estos son los roles ', this.role)
+    }).catch((error) => {
+      console.log(error)
+    })
+  }
+
+  sucursales: any[] = [];
+
+  async loadSucursales() {
+    try {
+      const res = await this.api.getSucursales(this.token);
+      this.sucursales = res;
+
+      console.log('Sucursales cargadas:', this.sucursales);
+    } catch (error) {
+      console.error('Error cargando sucursales:', error);
+    }
   }
 
   // loadUserData() {
@@ -108,7 +192,7 @@ export class DashboardPage implements OnInit {
         .sort((a: any, b: any) =>
           new Date(b.fecha_creacion || 0).getTime() - new Date(a.fecha_creacion || 0).getTime()
         )
-        .slice(0, 5); // Tomamos los 5 más recientes
+        .slice(0, 4); // Tomamos los 5 más recientes
       console.log(this.pedidosRecientes)
       this.metrics = {
         totalPedidos: totalPedidos,
@@ -127,6 +211,17 @@ export class DashboardPage implements OnInit {
       };
       this.pedidosRecientes = []; // Array vacío en caso de error
     });
+  }
+  users: any[] = [];
+
+  async getUsers() {
+    await this.api.getUsers(this.token).then((res) => {
+      this.users = res.data
+      this.usersFiltrados = [...this.users];
+      console.log('estos son los usuarios', this.users)
+    }).catch((error) => {
+      console.log(error)
+    })
   }
 
 

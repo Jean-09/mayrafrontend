@@ -15,17 +15,18 @@ import { ApiService } from 'src/app/services/api.service';
 export class SucursalesPage implements OnInit {
   currentUser: any;
   sucursales: any[] = [];
-  empleados: User[] = [];
-  
+  empleados: any[] = [];
+
   showAddModal = false;
   showDetailModal = false;
-  selectedSucursal: Sucursal | null = null;
+  selectedSucursal: any;
   editingSucursal = false;
-  
+
   sucursalData = {
-    id: 0,
+    documentId: '',
     nombre: '',
-    direccion: ''
+    direccion: '',
+    telefono: ''
   };
 
   constructor(
@@ -34,16 +35,16 @@ export class SucursalesPage implements OnInit {
     private storage: Storage,
     private router: Router,
     private api: ApiService
-  ) {}
+  ) { }
 
   async ngOnInit() {
     // this.loadUserData();
-    
+
     await this.storage.create();
     await this.getToken();
     // await this.loadUserData();
     this.loadSucursales();
-    this.loadEmpleados();
+    this.getpersonal();
 
     const tokenData = await this.storage.get('token');
     console.log('este es mis datos del token', tokenData);
@@ -71,133 +72,109 @@ export class SucursalesPage implements OnInit {
     }
   }
 
-sucursalesConEstadisticas: any[] = []; // Nueva propiedad para almacenar sucursales con stats
+  sucursalesConEstadisticas: any[] = []; // Nueva propiedad para almacenar sucursales con stats
 
-async loadSucursales() {
-  try {
-    const res = await this.api.getSucursales(this.token);
-    this.sucursales = res;
-    console.log('Sucursales cargadas:', this.sucursales);
-  } catch (error) {
-    console.error('Error cargando sucursales:', error);
-  }
-}
+  async loadSucursales() {
+    try {
+      const res = await this.api.getSucursales(this.token);
+      this.sucursales = res;
 
-  loadEmpleados() {
-    // Simulación de empleados
-    this.empleados = [
-      {
-        id: 2,
-        nombre: 'Juan Pérez',
-        correo: 'juan@sucursal1.com',
-        rol: 'empleado',
-        sucursal: { id: 1, nombre: 'Sucursal Centro', direccion: 'Calle Principal 123' }
-      },
-      {
-        id: 4,
-        nombre: 'María García',
-        correo: 'maria@sucursal1.com',
-        rol: 'empleado',
-        sucursal: { id: 1, nombre: 'Sucursal Centro', direccion: 'Calle Principal 123' }
-      },
-      {
-        id: 5,
-        nombre: 'Carlos López',
-        correo: 'carlos@sucursal2.com',
-        rol: 'empleado',
-        sucursal: { id: 2, nombre: 'Sucursal Norte', direccion: 'Avenida Norte 456' }
-      },
-      {
-        id: 6,
-        nombre: 'Ana Martínez',
-        correo: 'ana@sucursal2.com',
-        rol: 'empleado',
-        sucursal: { id: 2, nombre: 'Sucursal Norte', direccion: 'Avenida Norte 456' }
-      },
-      {
-        id: 7,
-        nombre: 'Luis Rodríguez',
-        correo: 'luis@sucursal3.com',
-        rol: 'empleado',
-        sucursal: { id: 3, nombre: 'Sucursal Sur', direccion: 'Carrera Sur 789' }
-      },
-      {
-        id: 8,
-        nombre: 'Carmen Jiménez',
-        correo: 'carmen@sucursal1.com',
-        rol: 'empleado',
-        sucursal: { id: 1, nombre: 'Sucursal Centro', direccion: 'Calle Principal 123' }
-      }
-    ];
+      console.log('Sucursales cargadas:', this.sucursales);
+    } catch (error) {
+      console.error('Error cargando sucursales:', error);
+    }
   }
 
-getSucursalStats(sucursalId: number) {
-  const sucursal = this.sucursales.find(s => s.id === sucursalId);
-  
-  if (!sucursal) {
-    return { pedidos: 0, empleados: 0, ventas: 0 };
+
+
+  getSucursalStats(sucursalId: number) {
+    const sucursal = this.sucursales.find(s => s.documentId === sucursalId); // 👈 corregido
+
+    if (!sucursal) {
+      return { pedidos: 0, empleados: 0, ventas: 0 };
+    }
+
+    const totalVentas = sucursal.pedidos?.reduce((sum: number, pedido: any) => {
+      return sum + (pedido.total || 0);
+    }, 0) || 0;
+
+    return {
+      pedidos: sucursal.pedidos?.length || 0,
+      empleados: sucursal.users?.length || 0, // 👈 aquí ya cuenta bien
+      ventas: totalVentas
+    };
   }
 
-  return {
-    pedidos: sucursal.pedidos?.length || 0,       // Mantén el nombre 'pedidos'
-    empleados: sucursal.users?.length || 0,       // Mantén el nombre 'empleados'
-    ventas: this.calcularVentas(sucursal.pedidos) // Mantén el nombre 'ventas'
-  };
-}
-
-private calcularVentas(pedidos: any[] = []): number {
-  return pedidos.reduce((total, pedido) => total + (pedido.total || 0), 0);
-}
-
-calcularVentasTotales(pedidos: any[]): number {
-  return pedidos.reduce((total, pedido) => {
-    return total + (pedido.total || 0);
-  }, 0);
-}
-
-  getEmpleadosSucursal(sucursalId: number): User[] {
-    return this.empleados.filter(empleado => empleado.sucursal?.id === sucursalId);
+  getpersonal() {
+    this.api.getPersonal(this.token).then((res) => {
+      this.empleados = res
+      console.log(this.empleados)
+    }).catch((error) => {
+      console.log(error)
+    })
   }
 
-  verDetalle(sucursal: Sucursal) {
+
+  private calcularVentas(pedidos: any[] = []): number {
+    return pedidos.reduce((total, pedido) => total + (pedido.total || 0), 0);
+  }
+
+  calcularVentasTotales(pedidos: any[]): number {
+    return pedidos.reduce((total, pedido) => {
+      return total + (pedido.total || 0);
+    }, 0);
+  }
+
+  getEmpleadosSucursal(sucursalId: number) {
+    console.log(sucursalId)
+    return this.empleados.filter(empleado => empleado.sucursal?.documentId === sucursalId);
+  }
+
+  verDetalle(sucursal: any) {
     this.selectedSucursal = sucursal;
     this.showDetailModal = true;
   }
 
-  editarSucursal(sucursal: Sucursal) {
+  async editarSucursal(sucursal: any) {
     this.editingSucursal = true;
     this.sucursalData = { ...sucursal };
     this.showAddModal = true;
+    console.log(sucursal)
+
+
   }
 
-  eliminarSucursal(sucursal: Sucursal) {
+  eliminarSucursal(sucursal: any) {
     if (confirm(`¿Está seguro de eliminar la sucursal "${sucursal.nombre}"?`)) {
       // Aquí se eliminaría la sucursal de la API
       console.log('Eliminando sucursal:', sucursal);
-      
+
       // Eliminar localmente
-      this.sucursales = this.sucursales.filter(s => s.id !== sucursal.id);
+      this.sucursales = this.sucursales.filter(s => s.documentId !== sucursal.documentId);
     }
   }
 
-  guardarSucursal() {
-    if (this.sucursalData.nombre && this.sucursalData.direccion) {
+  async guardarSucursal() {
+    if (this.sucursalData.nombre && this.sucursalData.direccion && this.sucursalData.telefono) {
       if (this.editingSucursal) {
         // Actualizar sucursal existente
-        const index = this.sucursales.findIndex(s => s.id === this.sucursalData.id);
-        if (index !== -1) {
-          this.sucursales[index] = { ...this.sucursalData };
+        const data = {
+          nombre: this.sucursalData.nombre,
+          direccion: this.sucursalData.direccion,
+          telefono: this.sucursalData.telefono
         }
+        await this.api.updateSucursal(this.sucursalData.documentId, data, this.token);
+        this.loadSucursales()
       } else {
         // Crear nueva sucursal
-        const nuevaSucursal: Sucursal = {
-          id: Date.now(),
+        const nuevaSucursal: any = {
           nombre: this.sucursalData.nombre,
-          direccion: this.sucursalData.direccion
+          direccion: this.sucursalData.direccion,
+          telefono: this.sucursalData.telefono
         };
         this.sucursales.push(nuevaSucursal);
       }
-      
+
       this.closeModal();
     }
   }
@@ -206,13 +183,14 @@ calcularVentasTotales(pedidos: any[]): number {
     this.showAddModal = false;
     this.editingSucursal = false;
     this.sucursalData = {
-      id: 0,
+      documentId: '',
       nombre: '',
-      direccion: ''
+      direccion: '',
+      telefono: ''
     };
   }
 
-    async mostrarAlerta(titulo: string, mensaje: string) {
+  async mostrarAlerta(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
       header: titulo,
       message: mensaje,

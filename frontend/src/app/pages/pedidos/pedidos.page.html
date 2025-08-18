@@ -1,9 +1,9 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header [translucent]="true" >
+  <ion-toolbar style="--background: #A9C0D3; color: #36454F;">
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>Gestión de Pedidos</ion-title>
+    <ion-title >Gestión de Pedidos</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="showFilterModal = true">
         <ion-icon name="filter-outline"></ion-icon>
@@ -12,23 +12,23 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" style="--background: #F8F8F8;">
   <div class="pedidos-container">
     <!-- FAB para nuevo pedido -->
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="currentUser?.role.name !== 'central'">
-      <ion-fab-button (click)="crearPedido()">
+    <ion-fab vertical="bottom" horizontal="end" *ngIf="currentUser?.role.name !== 'admin'" >
+      <ion-fab-button (click)="crearPedido()" style="--background:#E8B0B0;">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
-    <!-- Selector de sucursal para admin -->
-    <div class="sucursal-selector" *ngIf="currentUser?.role.name === 'admin' || currentUser?.role.name === 'central'">
-      <ion-item>
-        <ion-label>Ver pedidos de:</ion-label>
-        <ion-select [(ngModel)]="selectedSucursal" (ionChange)="onSucursalChange()" placeholder="Todas las sucursales">
-          <ion-select-option value="">Todas las sucursales</ion-select-option>
-          <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.documentId">
-            {{ sucursal.nombre || 'Sin datos' }}
+    <div class="sticky-header" *ngIf="currentUser?.role.name === 'admin' || currentUser?.role.name === 'central'" >
+      <ion-item class="sucursal-selector" >
+        <ion-label style="color: #36454F;">Ver pedidos de:</ion-label>
+        <ion-select [(ngModel)]="selectedSucursal" (ionChange)="onSucursalChange()" placeholder="Todas las sucursales"
+          interface="popover">
+          <ion-select-option value="" style="color: #36454F;">Todas las sucursales</ion-select-option>
+          <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal?.documentId" >
+            {{ sucursal?.nombre || 'Sin datos' }}
           </ion-select-option>
         </ion-select>
       </ion-item>
@@ -42,10 +42,11 @@
           <ion-icon name="close-circle"></ion-icon>
         </ion-chip>
         <ion-chip *ngIf="filtros.fecha_inicio" (click)="clearFilter('fecha')">
-          <ion-label>{{ filtros.fecha_inicio | date:'short' : 'Sin datos' }} - {{ filtros.fecha_fin | date:'short' : 'Sin datos'}}</ion-label>
+          <ion-label>{{ filtros.fecha_inicio | date:'short' : 'Sin datos' }} - {{ filtros.fecha_fin | date:'short' :
+            'Sin datos'}}</ion-label>
           <ion-icon name="close-circle"></ion-icon>
         </ion-chip>
-        <ion-chip *ngIf="filtros.sucursal && currentUser?.rol === 'admin'" (click)="clearFilter('sucursal')">
+        <ion-chip *ngIf="filtros.sucursal" (click)="clearFilter('sucursal')">
           <ion-label>{{ getSucursalName(filtros.sucursal) || 'Sin datos' }}</ion-label>
           <ion-icon name="close-circle"></ion-icon>
         </ion-chip>
@@ -57,10 +58,10 @@
       <div class="pedido-card" *ngFor="let pedido of pedidos" (click)="verDetalle(pedido)">
         <div class="pedido-header">
           <div class="pedido-info">
-            <h3>Pedido #{{ pedido.numero_pedido|| 'Sin datos'  || 'Sin datos'}}</h3>
+            <h3 style="color: #36454F;">Pedido #{{ pedido.numero_pedido|| 'Sin datos' || 'Sin datos'}}</h3>
             <p>{{ pedido.fecha | date:'short' : 'Sin datos' }}</p>
-            <p *ngIf="currentUser?.role.name === 'admin' || currentUser?.role.name === 'central'">
-              {{ pedido.sucursal.nombre || 'Sin datos' }}
+            <p>
+              {{ pedido.sucursal?.nombre || 'Sin datos' }}
             </p>
           </div>
           <div class="pedido-status">
@@ -70,7 +71,7 @@
             <p class="pedido-total">${{ pedido.total.toLocaleString() || 'Sin datos' }}</p>
           </div>
         </div>
-        
+
         <div class="pedido-details">
           <p>{{ pedido.prendas || 'Sin datos' }} prenda(s)</p>
           <p *ngIf="pedido.observaciones">{{ pedido.observaciones || 'Sin datos' }}</p>
@@ -91,8 +92,8 @@
   </div>
 
   <!-- Modal de filtros -->
-  <ion-modal [isOpen]="showFilterModal" (didDismiss)="showFilterModal = false">
-    <ng-template>
+  <ion-modal [isOpen]="showFilterModal" (didDismiss)="showFilterModal = false" >
+    <ng-template >
       <ion-header>
         <ion-toolbar>
           <ion-title>Filtros</ion-title>
@@ -104,9 +105,9 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-content>
-        <div class="filter-content">
-          <ion-item>
+      <ion-content style=" --background: #F8F8F8 !important;">
+        <div class="filter-content" >
+          <ion-item >
             <ion-label>Estado</ion-label>
             <ion-select [(ngModel)]="filtros.estado" placeholder="Seleccionar estado">
               <ion-select-option value="">Todos</ion-select-option>
@@ -118,35 +119,21 @@
 
           <ion-item>
             <ion-label>Fecha Inicio</ion-label>
-            <ion-datetime 
-              [(ngModel)]="filtros.fecha_inicio" 
-              presentation="date">
+            <ion-datetime [(ngModel)]="filtros.fecha_inicio" presentation="date">
             </ion-datetime>
           </ion-item>
 
           <ion-item>
             <ion-label>Fecha Fin</ion-label>
-            <ion-datetime 
-              [(ngModel)]="filtros.fecha_fin" 
-              presentation="date">
+            <ion-datetime [(ngModel)]="filtros.fecha_fin" presentation="date">
             </ion-datetime>
           </ion-item>
 
-          <ion-item *ngIf="currentUser?.role.name === 'admin'">
-            <ion-label>Sucursal</ion-label>
-            <ion-select [(ngModel)]="filtros.sucursal" placeholder="Seleccionar sucursal">
-              <ion-select-option value="">Todas</ion-select-option>
-              <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.documentId">
-                {{ sucursal.nombre || 'Sin datos'}}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-
           <div class="filter-actions">
-            <ion-button expand="block" (click)="applyFilters()">
+            <ion-button expand="block" (click)="applyFilters()" style="color: #36454F;">
               Aplicar Filtros
             </ion-button>
-            <ion-button expand="block" fill="clear" (click)="clearAllFilters()">
+            <ion-button expand="block" fill="clear" (click)="clearAllFilters()" style="color: #708090;">
               Limpiar Filtros
             </ion-button>
           </div>

@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar style="--background: #A9C0D3; color: #36454F;">
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" style="--background: #F8F8F8;">
   <div class="reportes-container">
     <!-- Resumen General -->
     <div class="resumen-general">
@@ -47,19 +47,19 @@
           <div class="sucursal-metrics">
             <div class="metric">
               <span class="label">Pedidos:</span>
-              <span class="value">{{ sucursal.pedidos.id }}</span>
+              <span class="value">{{ getSucursalStats(sucursal.documentId).pedidos || '0' }}</span>
             </div>
             <div class="metric">
               <span class="label">Ventas:</span>
-              <span class="value">${{ totalVentas}}</span>
+              <span class="value">${{ getSucursalStats(sucursal.documentId).ventas.toLocaleString() || '0'}}</span>
             </div>
             <div class="metric">
               <span class="label">Empleados:</span>
-              <span class="value">{{ sucursal.empleados }}</span>
+              <span class="value">{{ getSucursalStats(sucursal.documentId).empleados || '0' }}</span>
             </div>
             <div class="metric">
               <span class="label">Inventario:</span>
-              <span class="value">{{ totalInventario }} items</span>
+              <span class="value">{{ getSucursalStats(sucursal.documentId).inventarios || '0' }} Insumos</span>
             </div>
           </div>
         </div>
@@ -89,13 +89,13 @@
     </div>
 
     <!-- Inventario Crítico -->
-    <div class="inventario-critico" *ngIf="inventarioCritico.length > 0">
+    <div class="inventario-critico">
       <h3>Inventario Crítico (Stock Bajo)</h3>
       <div class="critico-list">
         <div class="critico-item" *ngFor="let item of inventarioCritico">
           <div class="item-info">
-            <h4>{{ item.producto }}</h4>
-            <p>{{ item.sucursal }}</p>
+            <h4>{{ item.producto}}</h4>
+            <p>{{ item.sucursal.nombre || 'Sin sucursal'}}</p>
           </div>
           <div class="item-cantidad">
             <ion-badge color="danger">{{ item.cantidad }} restantes</ion-badge>

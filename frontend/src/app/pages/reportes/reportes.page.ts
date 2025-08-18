@@ -19,8 +19,10 @@ export class ReportesPage implements OnInit {
   // Variables para datos dinámicos
   totalSucursales = 0;
   totalPedidos = 0;
+  totalPedidosSucursal = 0;
   totalVentas = 0;
   totalEmpleados = 0;
+  totalEmpleadosSucursal = 0;
   totalInventario = 0;
   sucursalesStats: any[] = [];
   estadosPedidos: any = {};
@@ -130,6 +132,7 @@ export class ReportesPage implements OnInit {
     await this.storage.create();
     await this.getToken();
     await this.loadSucursales();
+    await this.getInventarioCritico()
 
     // Obtén el token y el usuario guardados
     const tokenData = await this.storage.get('token');
@@ -166,7 +169,6 @@ export class ReportesPage implements OnInit {
 
       this.sucursalesStats = res;
 
-      // Ajusta los nombres de las propiedades según tu API
       this.totalSucursales = res.length;
       this.totalPedidos = res.length;
        this.totalVentas = res.reduce((sum, sucursal) => {
@@ -179,14 +181,50 @@ export class ReportesPage implements OnInit {
       this.totalInventario = res.length;
      
       // Llama a las funciones para el resto de los datos dinámicos
-      this.estadosPedidos = this.calcularEstadosPedidos(res);
-      this.inventarioCritico = this.calcularInventarioCritico(res);
+      this.estadosPedidos = this.calcularEstadosPedidos(res)
       this.empleadosDistribution = this.calcularDistribucionEmpleados(res);
 
     }).catch((error) => {
       console.log('Error al cargar las sucursales', error);
     });
   }
+
+ getInventarioCritico() {
+  this.api.getInventario(this.token).then((res: any) => {
+    this.inventarioCritico = res.data.data.filter((item:any) => (item.cantidad || 0) < 5);
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+
+getSucursalStats(sucursalId: number) {
+  const sucursal = this.sucursalesStats.find(s => s.documentId === sucursalId);
+
+  if (!sucursal) {
+    return { 
+      pedidos: 0, 
+      empleados: 0, 
+      ventas: 0, 
+      inventarios: 0,
+      inventarioBajo: false // 👈 Nuevo campo
+    };
+  }
+
+  const totalVentas = sucursal.pedidos?.reduce((sum: number, pedido: any) => {
+    return sum + (pedido.total || 0);
+  }, 0) || 0;
+
+  const totalInventarios = sucursal.inventarios?.length || 0; 
+
+  return {
+    pedidos: sucursal.pedidos?.length || 0,
+    empleados: sucursal.users?.length || 0,
+    inventarios: totalInventarios, // 👈 Ahora sí muestra el total
+    ventas: totalVentas,
+    inventarioBajo: totalInventarios <= 5 // 👈 Nuevo campo booleano
+  };
+}
 
 private calcularEstadosPedidos(sucursales: any[]): any {
   let estadosPedidos = {
@@ -217,29 +255,6 @@ private calcularEstadosPedidos(sucursales: any[]): any {
 
   return estadosPedidos;
 }
-
-  private calcularInventarioCritico(sucursales: any[]): any[] {
-    // Aquí se recorre el inventario de cada sucursal para encontrar productos críticos
-    // El nombre de las propiedades (e.g., `sucursal.inventario`) debe coincidir con tu 
-    console.log(sucursales)
-    const inventarioCritico: any[] = [];
-    sucursales.forEach(sucursal => {
-      if (sucursal.inventarios && sucursal.inventarios.length > 0) {
-        sucursal.inventario.forEach((item: any) => {
-          if (item.cantidad < 5) { // Define tu propio umbral de "crítico"
-            inventarioCritico.push({
-              producto: item.producto,
-              sucursal: sucursal.nombre,
-              cantidad: item.cantidad
-            });
-          }
-        });
-      }
-    });
-    
-    return inventarioCritico;
-    
-  }
 
   private calcularDistribucionEmpleados(sucursales: any[]): any[] {
     const totalEmpleados = sucursales.reduce((sum, s) => sum + (s.empleados || 0), 0);

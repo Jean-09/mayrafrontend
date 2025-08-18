@@ -24,7 +24,7 @@ export class AuthService {
     const res = await axios.post(this.url + '/auth/local', data);
     const { jwt, user } = res.data;
 
-    const userRes = await axios.get(this.url + '/users/me?populate[role]=true', {
+    const userRes = await axios.get(this.url + '/users/me?populate=*', {
       headers: {
         Authorization: `Bearer ${jwt}`
       }

@@ -3,12 +3,12 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #A9C0D3 0%, #E8B0B0 100%);
   padding: 20px;
 }
 
 .login-card {
-  background: white;
+  background: #F8F8F8;
   border-radius: 20px;
   padding: 40px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -48,6 +48,8 @@ ion-item {
   margin-top: 20px;
   --border-radius: 10px;
   height: 50px;
+  --background: #E8B0B0;
+  color: #36454F;
 }
 
 .demo-credentials {

@@ -25,10 +25,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/detalle-pedido/detalle-pedido.module').then(m => m.DetallePedidoPageModule)
   },
   {
-    path: 'detalle-pedido/:id',
-    loadChildren: () => import('./pages/detalle-pedido/detalle-pedido.module').then(m => m.DetallePedidoPageModule)
-  },
-  {
     path: 'inventario',
     loadChildren: () => import('./pages/inventario/inventario.module').then(m => m.InventarioPageModule)
   },
@@ -39,7 +35,12 @@ const routes: Routes = [
   {
     path: 'reportes',
     loadChildren: () => import('./pages/reportes/reportes.module').then(m => m.ReportesPageModule)
+  },
+  {
+    path: 'pedido-detalle',
+    loadChildren: () => import('./pages/pedido-detalle/pedido-detalle.module').then( m => m.PedidoDetallePageModule)
   }
+
 ];
 
 @NgModule({

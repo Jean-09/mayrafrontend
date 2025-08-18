@@ -17,10 +17,6 @@
             "target": "api::sucursal.sucursal",
             "inversedBy": "pedidos"
         },
-        "numero_pedido": {
-            "type": "text",
-            "unique": true
-        },
         "fecha": {
             "type": "datetime"
         },
@@ -58,6 +54,11 @@
             "relation": "manyToOne",
             "target": "plugin::users-permissions.user",
             "inversedBy": "pedidos"
+        },
+        "numero_pedido": {
+            "type": "integer",
+            "required": true,
+            "unique": true
         }
     }
 }

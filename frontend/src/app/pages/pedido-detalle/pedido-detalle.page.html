@@ -1,0 +1,91 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #A9C0D3; color: #36454F;">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle del Pedido</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" style="--background: #F8F8F8;">
+  <form #pedidoForm="ngForm" novalidate>
+    <div class="form-container">
+      <!-- Información del pedido -->
+      <div class="form-section">
+        <h3>Información del Pedido</h3>
+
+        <ion-item style="--background: #F8F8F8; color: #36454F;">
+          <ion-label>Estado</ion-label>
+          <ion-select [(ngModel)]="pedido.estado" name="estado" [disabled]="currentUser?.role.name === 'empleado'">
+            <ion-select-option value="En proceso">En proceso</ion-select-option>
+            <ion-select-option value="En camino">En camino</ion-select-option>
+            <ion-select-option value="Entregado">Entregado</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item style="--background: #F8F8F8; color: #36454F;">
+          <ion-label>Fecha de creación</ion-label>
+          <ion-text>{{ pedido.fecha | date:'dd/MM/yyyy' }}</ion-text>
+        </ion-item>
+
+        <ion-item style="--background: #F8F8F8; color: #36454F;">
+          <ion-label>Fecha de entrega</ion-label>
+          <ion-text>{{ pedido.fecha_entrega | date:'dd/MM/yyyy' }}</ion-text>
+        </ion-item>
+
+        <ion-item style="--background: #F8F8F8; color: #36454F;">
+          <ion-label position="floating">Observaciones Generales</ion-label>
+          <ion-textarea [(ngModel)]="pedido.observaciones" name="observaciones" rows="3" readonly></ion-textarea>
+        </ion-item>
+      </div>
+
+      <!-- Prendas -->
+      <div class="form-section">
+        <div class="section-header">
+          <h3 style="color: #36454F;">Prendas</h3>
+        </div>
+
+        <div class="prendas-list">
+          <div class="prenda-card" *ngFor="let prenda of (pedido?.prenda || []); let i = index">
+            <div class="prenda-header">
+              <h4>Prenda {{i + 1}}</h4>
+            </div>
+
+            <ion-item style="--background: #F8F8F8; color: #36454F;">
+              <ion-label>Categoría</ion-label>
+              <ion-text>{{prenda.categoria_prenda?.nombre}} - ${{prenda.categoria_prenda?.precio_base}}</ion-text>
+            </ion-item>
+
+            <ion-item style="--background: #F8F8F8; color: #36454F;">
+              <ion-label>Servicios Adicionales</ion-label>
+              <ion-text>
+                <span *ngFor="let servicio of prenda.servicios">
+                  {{servicio.nombre}} (+${{servicio.precio_adicional}})<br>
+                </span>
+              </ion-text>
+            </ion-item>
+
+            <ion-item style="--background: #F8F8F8; color: #36454F;">
+              <ion-label position="floating">Observaciones</ion-label>
+              <ion-textarea [(ngModel)]="prenda.observaciones" rows="2" readonly></ion-textarea>
+            </ion-item>
+
+            <div class="prenda-total">
+              <strong style="color: #36454F;">Subtotal: ${{prenda.subtotal}}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="total-section">
+        <div class="total-card">
+          <h3 style="color: #36454F;">Total del Pedido</h3>
+          <div class="total-amount" style="color: #36454F;">
+            ${{pedido.total}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</ion-content>

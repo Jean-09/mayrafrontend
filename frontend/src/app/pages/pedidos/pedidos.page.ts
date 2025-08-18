@@ -38,7 +38,7 @@ export class PedidosPage implements OnInit {
     await this.storage.create();
     await this.getToken();
     await this.loadSucursales();
-    await this.loadPedidos();
+    
 
     // Obtén el token y el usuario guardados
     const tokenData = await this.storage.get('token');
@@ -53,6 +53,7 @@ export class PedidosPage implements OnInit {
       this.mostrarAlerta('Error', 'Intenta iniciar sesión nuevamente');
       this.router.navigate(['/login']);
     }
+    await this.loadPedidos();
     console.log(this.currentUser)
 
   }
@@ -91,32 +92,37 @@ export class PedidosPage implements OnInit {
     })
   }
 
-  async loadPedidos() {
-    await this.api.getAllPedidos(this.token).then((res) => {
-      const allPedidos = res;
+  verPedidos:any[]=[]
 
-      let filteredPedidos = [...allPedidos];
+async loadPedidos() {
+  await this.api.getAllPedidos(this.token).then((res) => {
+    this.verPedidos = res
+    const allPedidos = res;
+    console.log(allPedidos)
 
-      // Filtrar por sucursal según el rol del usuario
-      if (this.currentUser?.role.name === 'empleado' && this.currentUser.sucursal) {
-        // Empleados solo ven pedidos de su sucursal
-        filteredPedidos = filteredPedidos.filter(p => p.sucursal.id === this.currentUser?.sucursal?.id);
-      } else if ((this.currentUser?.role.name === 'admin' || this.currentUser?.role.name === 'central') && this.selectedSucursal) {
-        // Admin/Central pueden filtrar por sucursal específica
-        filteredPedidos = filteredPedidos.filter(p => p.sucursal.documentId === this.selectedSucursal);
-      }
+    let filteredPedidos = [...allPedidos];
 
-      this.pedidos = filteredPedidos;
-      console.log(this.pedidos)
+    // Filtrado seguro para empleados
+    if (this.currentUser?.role?.name === 'empleado' && this.currentUser?.sucursal?.documentId) {
+      filteredPedidos = filteredPedidos.filter(p => 
+        p?.sucursal?.documentId === this.currentUser?.sucursal?.documentId
+      );
+    } 
+    // Filtrado seguro para admin/central
+    else if ((this.currentUser?.role?.name === 'admin' || this.currentUser?.role?.name === 'central') && this.selectedSucursal) {
+      filteredPedidos = filteredPedidos.filter(p => 
+        p?.sucursal?.documentId === this.selectedSucursal
+      );
+    }
 
-      // Aplicar filtros adicionales
-      this.applyCurrentFilters();
-    }).catch((error) => {
-      console.log(error)
-    })
-
-
-  }
+    this.pedidos = filteredPedidos;
+    this.applyCurrentFilters();
+    
+  }).catch((error) => {
+    console.log(error);
+    this.pedidos = []; // Asegurar array vacío en caso de error
+  });
+}
 
   applyCurrentFilters() {
     let filtered = [...this.pedidos];
@@ -208,10 +214,10 @@ export class PedidosPage implements OnInit {
     this.loadPedidos();
   }
 
-  clearAllFilters() {
+  async clearAllFilters() {
     this.filtros = {};
     this.showFilterModal = false;
-    this.loadPedidos();
+    await this.loadPedidos();
   }
 
   hasActiveFilters(): boolean {
@@ -237,9 +243,9 @@ export class PedidosPage implements OnInit {
   }
 
   verDetalle(pedido:any) {
-    this.router.navigate(['/detalle-pedido'], {
+    this.router.navigate(['/pedido-detalle'], {
       state: {
-        pedido: pedido
+        pedidos: pedido
       }
     })
   }

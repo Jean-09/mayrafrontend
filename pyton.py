@@ -1,11 +1,13 @@
 import requests
 import json
+import random
+from datetime import datetime, timedelta
 
 # URL del endpoint
-url = "http://localhost:1338/api/servicios"
+url = "http://localhost:1338/api/inventarios"  # Se actualiza el endpoint a /api/inventarios
 
 # Token de autenticación
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1Mjk0OTI5LCJleHAiOjE3NTc4ODY5Mjl9.CK_JwRfdHQB6hZZ1-zny9tI6vM6TE0XTLw2tMDpv6j8" # Reemplaza con tu token
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzU1NDAyNzYyLCJleHAiOjE3NTc5OTQ3NjJ9.V2OecIO4dTuSdMF_WKScPefZPCcfVnyaIgx566M2hAI"  # Reemplaza con tu token
 
 # Headers para la petición
 headers = {
@@ -13,87 +15,53 @@ headers = {
     "Content-Type": "application/json"
 }
 
-# Lista de datos para los servicios adicionales
-# NOTA: Si un servicio tiene una relación, reemplaza 'documento-id-pedido-ejemplo'
-# con un documentId real de un pedido de tu base de datos.
-servicios_adicionales_data = [
-    {
-        "nombre": "Servicio de planchado",
-        "descripcion": "Planchado profesional de prendas, por pieza.",
-        "precio_adicional": 20.00,
-        "activo": True
-    },
-    {
-        "nombre": "Servicio de teñido",
-        "descripcion": "Cambio de color de prendas seleccionadas.",
-        "precio_adicional": 150.00,
-        "activo": True
-    },
-    {
-        "nombre": "Arreglo de costura",
-        "descripcion": "Pequeños arreglos y ajustes de costura.",
-        "precio_adicional": 50.00,
-        "activo": True
-    },
-    {
-        "nombre": "Lavado de edredones",
-        "descripcion": "Limpieza especial para edredones, cobijas y cobertores.",
-        "precio_adicional": 85.00,
-        "activo": True
-    },
-    {
-        "nombre": "Limpieza de alfombras",
-        "descripcion": "Lavado de alfombras de tamaño pequeño a mediano.",
-        "precio_adicional": 200.00,
-        "activo": False
-    },
-    {
-        "nombre": "Lavado de cortinas",
-        "descripcion": "Lavado y secado de cortinas, por pieza.",
-        "precio_adicional": 75.00,
-        "activo": True
-    },
-    {
-        "nombre": "Servicio de desmanchado",
-        "descripcion": "Tratamiento especializado para remover manchas difíciles.",
-        "precio_adicional": 40.00,
-        "activo": True
-    },
-    {
-        "nombre": "Lavado de calzado",
-        "descripcion": "Limpieza profesional de tenis y zapatos.",
-        "precio_adicional": 65.00,
-        "activo": False
-    },
-    {
-        "nombre": "Limpieza de cojines",
-        "descripcion": "Limpieza profunda de cojines y almohadas.",
-        "precio_adicional": 30.00,
-        "activo": True
-    },
-    {
-        "nombre": "Servicio a domicilio",
-        "descripcion": "Recolección y entrega de ropa en la dirección del cliente.",
-        "precio_adicional": 25.00,
-        "activo": True
-    },
-    {
-        "nombre": "Doblado especial",
-        "descripcion": "Doblado y empaquetado de prendas con cuidado extra.",
-        "precio_adicional": 15.00,
-        "activo": True
-    }
+# Lista de documentId de sucursales proporcionados en la imagen
+sucursales_document_ids = [
+    "sbco0ktcwa1a24fc4yc0vxdb",
+    "l7ikzw2a5i3i305v8nm10a5j",
+    "veeg1q4x2facineo47kg17ge",
+    "gtpele8oe77gvu8esmuc899d"
 ]
 
+# Lista de productos para el inventario
+productos = [
+    "Detergente A", "Suavizante B", "Blanqueador C", "Planchas a vapor",
+    "Ganchos de ropa", "Bolsas de plástico", "Etiquetas de lavado"
+]
+
+# Lista de tipos de movimiento del inventario
+tipos_movimiento = [
+    "Recién agregado"
+]
+
+# Función para generar una fecha y hora aleatoria en el último mes
+def random_datetime():
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=30)
+    random_seconds = random.randint(0, int((end_date - start_date).total_seconds()))
+    return start_date + timedelta(seconds=random_seconds)
+
 # Enviar cada servicio de la lista a la API
-for servicio in servicios_adicionales_data:
-    data_payload = {
-        "data": servicio
-    }
-    response = requests.post(url, json=data_payload, headers=headers)
-    
-    # Imprimir el resultado de cada petición
-    print(f"Enviando: {servicio['nombre']} -> Estado: {response.status_code}, Respuesta: {response.text}")
+for sucursal_id in sucursales_document_ids:
+    # Crear un conjunto de 5 a 10 registros de inventario para cada sucursal
+    for i in range(random.randint(5, 10)):
+        # Construir el payload con los campos de la segunda imagen
+        data_payload = {
+            "data": {
+                "sucursal": sucursal_id,
+                "producto": random.choice(productos),
+                "cantidad": random.randint(1, 100),
+                "tipo_movimiento": random.choice(tipos_movimiento),
+                "fecha": random_datetime().isoformat(),  # Formato ISO 8601
+                "observaciones": "Registro de prueba para simular inventario",
+                "precio_unitario": round(random.uniform(5.00, 300.00), 2)
+            }
+        }
+        
+        response = requests.post(url, json=data_payload, headers=headers)
+        
+        # Imprimir el resultado de cada petición
+        print(f"Sucursal ID: {sucursal_id} -> Enviando producto: {data_payload['data']['producto']} -> Estado: {response.status_code}, Respuesta: {response.text}")
 # import requests
 # import datetime
 # import json

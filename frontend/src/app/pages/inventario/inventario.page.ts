@@ -56,7 +56,7 @@ export class InventarioPage implements OnInit {
     await this.storage.create();
     await this.getToken();
     await this.loadSucursales();
-    await this.loadResumenInventario();
+    
 
     // Obtén el token y el usuario guardados
     const tokenData = await this.storage.get('token');
@@ -71,6 +71,7 @@ export class InventarioPage implements OnInit {
       this.mostrarAlerta('Error', 'Intenta iniciar sesión nuevamente');
       this.router.navigate(['/login']);
     }
+    await this.loadResumenInventario();
     console.log(this.currentUser)
 
   }

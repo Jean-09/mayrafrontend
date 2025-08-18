@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar style="--background: #A9C0D3; color: #36454F;">
     <ion-title>Panel de Control</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="logout()">
@@ -10,12 +10,29 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" style="--background: #F8F8F8;">
   <div class="dashboard-container">
+
+    <ion-fab vertical="bottom" horizontal="end" *ngIf="currentUser?.role.name === 'admin' || currentUser?.role.name === 'central'">
+
+      <ion-fab-button (click)="showAddUserModal = true" style="--background:#E8B0B0;">
+        <ion-icon name="person-add"></ion-icon>
+      </ion-fab-button>
+
+    </ion-fab>
+    <ion-fab vertical="bottom" (click)="showUserModal = true" horizontal="end"
+      *ngIf="currentUser?.role.name === 'admin' || currentUser?.role.name === 'central'">
+
+      <ion-fab-button style="--background:#E8B0B0;">
+        <ion-icon name="people"></ion-icon>
+      </ion-fab-button>
+
+    </ion-fab>
+
     <!-- Información del usuario -->
     <div class="user-info">
-      <h2>Bienvenido, {{ currentUser?.nombre }}</h2>
-      <p>{{ getRoleText(currentUser?.rol) }}</p>
+      <h2>Bienvenido, {{ currentUser?.username }}</h2>
+      <p>{{ getRoleText(currentUser?.role.name) }}</p>
       <p *ngIf="currentUser?.sucursal">{{ currentUser?.sucursal?.nombre || 'No especificado'}}</p>
     </div>
 
@@ -50,7 +67,8 @@
     <div class="quick-actions">
       <h3>Acciones Rápidas</h3>
       <div class="actions-grid">
-        <ion-button expand="block" fill="outline" (click)="navigateTo('/pedidos')" *ngIf="currentUser?.rol !== 'central'">
+        <ion-button expand="block" fill="outline" (click)="navigateTo('/detalle-pedido')"
+          *ngIf="currentUser?.role == 'admin'">
           <ion-icon name="add-circle-outline" slot="start"></ion-icon>
           Nuevo Pedido
         </ion-button>
@@ -60,24 +78,18 @@
           Ver Pedidos
         </ion-button>
 
-        <ion-button expand="block" fill="outline" (click)="navigateTo('/inventario')" *ngIf="currentUser?.rol !== 'central'">
+        <ion-button expand="block" fill="outline" (click)="navigateTo('/inventario')">
           <ion-icon name="cube-outline" slot="start"></ion-icon>
           Inventario
         </ion-button>
 
-        <ion-button 
-          expand="block" 
-          fill="outline" 
-          (click)="navigateTo('/sucursales')"
+        <ion-button expand="block" fill="outline" (click)="navigateTo('/sucursales')"
           *ngIf="currentUser?.role.name === 'admin'">
           <ion-icon name="business-outline" slot="start"></ion-icon>
           Sucursales
         </ion-button>
 
-        <ion-button 
-          expand="block" 
-          fill="outline" 
-          (click)="navigateTo('/reportes')"
+        <ion-button expand="block" fill="outline" (click)="navigateTo('/reportes')"
           *ngIf="currentUser?.role.name === 'admin' || currentUser?.role.name === 'central'">
           <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
           Reportes
@@ -95,9 +107,9 @@
       <div class="orders-list">
         <div class="order-item" *ngFor="let pedido of pedidosRecientes" (click)="verDetalle(pedido)">
           <div class="order-info">
-            <h4>Pedido #{{ pedido.id }}</h4>
-            <p>{{ pedido.fecha | date:'short' }}</p>
-            <p *ngIf="currentUser?.role.name === 'admin'">{{ pedido.sucursal.nombre }}</p>
+            <h4>Pedido #{{ pedido.numero_pedido || 'sin datos'}}</h4>
+            <p>{{ pedido.fecha | date:'short' : 'sin datos'}}</p>
+            <p *ngIf="currentUser?.role.name === 'admin'">{{ pedido?.sucursal?.nombre || 'sin datos' }}</p>
           </div>
           <div class="order-status">
             <ion-badge [color]="getStatusColor(pedido.estado)">
@@ -108,5 +120,120 @@
         </div>
       </div>
     </div>
+    <ion-modal [isOpen]="showAddUserModal" (didDismiss)="showAddUserModal = false"
+      *ngIf="currentUser?.role.name === 'admin'" class="add">
+      <ng-template class="add">
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Agregar Producto</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="showAddUserModal = false">
+                <ion-icon name="close"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content style="--background: #F8F8F8;" class="add">
+          <div class="modal-content">
+            <ion-item>
+              <ion-label position="stacked">Nombre del empleado</ion-label>
+              <ion-input type="text" [(ngModel)]="nuevoPersonal.username" placeholder="Ingrese el nombre del empleado"
+                required></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Correo del empleado</ion-label>
+              <ion-input type="text" [(ngModel)]="nuevoPersonal.email"
+                placeholder="Ingrese el correo electronico"></ion-input>
+            </ion-item>
+
+            <ion-item class="login-item">
+              <ion-label position="stacked">Contraseña</ion-label>
+              <ion-input [(ngModel)]="nuevoPersonal.password" name="password"
+                [type]="showPassword ? 'text' : 'password'" placeholder="Ingrese su contraseña" required
+                autocomplete="current-password">
+                <ion-button fill="clear" slot="end" (click)="togglePasswordVisibility()" class="password-toggle">
+                  <ion-icon [name]="showPassword ? 'eye-off' : 'eye'" style="color: #E8B0B0;"></ion-icon>
+                </ion-button>
+              </ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Rol del usuario</ion-label>
+              <ion-select placeholder="Seleccionar el rol" [(ngModel)]="nuevoPersonal.role">
+                <ion-select-option *ngFor="let rol of role" [value]="rol.id">
+                  {{ rol.name }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Sucursal asignada</ion-label>
+              <ion-select placeholder="Seleccionar sucursal" [(ngModel)]="nuevoPersonal.sucursal">
+                <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.documentId">
+                  {{ sucursal.nombre }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <div class="modal-actions">
+              <ion-button expand="block" (click)="agregarPersonal()"
+                style="--background: #E8B0B0; --color: #708090; width: 80%; margin-left: 10%; margin-top: 5%;">
+                Agregar Producto
+              </ion-button>
+            </div>
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+    <ion-modal [isOpen]="showUserModal" (didDismiss)="showAddUserModal = false"
+      *ngIf="currentUser?.role.name === 'admin'" class="user">
+      <ng-template class="user">
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Personal</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="showUserModal = false">
+                <ion-icon name="close"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content style="--background: #F8F8F8;" class="user">
+          <div class="detail-section">
+            <h3>Empleados</h3>
+            <ion-buttons slot="end">
+      <ion-button (click)="showSearchBar = true" *ngIf="!showSearchBar" class="search-button" >
+        <ion-icon name="search" style="color: #36454F;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <!-- Searchbar (visible solo cuando se activa) -->
+    <ion-searchbar 
+      [(ngModel)]="searchTerm" 
+      (ionInput)="filterUsuarios()"
+      (ionCancel)="showSearchBar = false"
+      placeholder="Buscar por número o docente" 
+      debounce="300"
+      class="animated-searchbar"
+      *ngIf="showSearchBar"
+      showCancelButton="always"
+    ></ion-searchbar>
+            <div class="empleados-list">
+              <div class="empleado-item" *ngFor="let empleado of usersFiltrados ">
+                <div class="empleado-info">
+                  <h4>{{ empleado.username || 'sin sucursal asignada' }}</h4>
+                  <p>{{ empleado.email || 'sin sucursal asignada' }}</p>
+                  <p>{{ empleado?.sucursal?.nombre || 'sin sucursal asignada' }}</p>
+                </div>
+                <ion-badge color="medium">{{ empleado?.role.name }}</ion-badge>
+              </div>
+            </div>
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
   </div>
 </ion-content>

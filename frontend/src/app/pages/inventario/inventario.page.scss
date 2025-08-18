@@ -22,8 +22,29 @@
   }
 }
 
+
 .filters-section {
   margin-bottom: 20px;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  
+
+  
+  ion-item {
+    --background: #f8f8f8; /* Fondo igual al tema */
+    --padding-start: 16px;
+    --padding-end: 16px;
+     --color: #000000; /* Color del texto principal */
+  }
+  
+  ion-select {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 .resumen-grid {
@@ -167,5 +188,71 @@ ion-segment {
     .movimiento-details {
       text-align: center;
     }
+  }
+}
+
+/* Modal de filtros */
+.agregar {
+  --width: 150%;
+  --max-width: 600px;
+  --height: 53.5%;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+ 
+  ion-toolbar {
+    --background: #A9C0D3; 
+    --color: #36454F;
+  }
+
+    ion-item {
+      --background: rgb(241, 241, 241);
+      color: #36454F;
+
+      ion-label {
+        color: #36454F;
+      }
+    }
+    ion-datetime{
+      --background: rgb(241, 241, 241);
+      --border-radius: 12px;
+    }
+}
+.movimiento {
+  --width: 150%;
+  --max-width: 600px;
+  --height: 52%;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+ 
+  ion-toolbar {
+    --background: #A9C0D3; 
+    --color: #36454F;
+  }
+
+    ion-item {
+      --background: rgb(241, 241, 241);
+      color: #36454F;
+
+      ion-label {
+        color: #36454F;
+      }
+    }
+    ion-datetime{
+      --background: rgb(241, 241, 241);
+      --border-radius: 12px;
+    }
+}
+
+ion-fab {
+  position: fixed !important;
+  z-index: 999;
+  
+  
+  &[vertical="bottom"] {
+    bottom: 20px;
+  }
+  
+  &[horizontal="end"] {
+    right: 20px;
   }
 }

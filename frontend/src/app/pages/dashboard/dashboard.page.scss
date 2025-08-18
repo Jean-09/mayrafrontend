@@ -3,17 +3,17 @@
 }
 
 .user-info {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #A9C0D3 0%, #E8B0B0 100%);
   color: white;
   padding: 20px;
   border-radius: 15px;
   margin-bottom: 20px;
-  
+
   h2 {
     margin: 0 0 10px 0;
     font-size: 24px;
   }
-  
+
   p {
     margin: 5px 0;
     opacity: 0.9;
@@ -33,18 +33,18 @@
   padding: 20px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  
+
   ion-icon {
     font-size: 40px;
     margin-bottom: 10px;
   }
-  
+
   h3 {
     font-size: 28px;
     margin: 10px 0;
     color: #333;
   }
-  
+
   p {
     color: #666;
     font-size: 14px;
@@ -54,10 +54,21 @@
 
 .quick-actions {
   margin-bottom: 30px;
-  
+
   h3 {
     margin-bottom: 15px;
     color: #333;
+  }
+}
+
+ion-button[fill="outline"] {
+  --border-color: #E8B0B0;
+  --color: #36454F;
+  /* Opcional: cambia también el color del texto */
+
+  &:hover {
+    --border-color: darken(#E8B0B0, 10%);
+    --color: darken(#E8B0B0, 10%);
   }
 }
 
@@ -79,7 +90,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  
+
   h3 {
     margin: 0;
     color: #333;
@@ -99,23 +110,23 @@
   padding: 15px;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
-  
+
   .order-info {
     h4 {
       margin: 0 0 5px 0;
       color: #333;
     }
-    
+
     p {
       margin: 2px 0;
       color: #666;
       font-size: 14px;
     }
   }
-  
+
   .order-status {
     text-align: right;
-    
+
     .order-total {
       margin: 5px 0 0 0;
       font-weight: bold;
@@ -128,12 +139,186 @@
   .dashboard-container {
     padding: 15px;
   }
-  
+
   .metrics-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .actions-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+.detail-section {
+  margin-bottom: 30px;
+
+
+  h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 18px;
+  }
+
+  p {
+    margin: 5px 0;
+    color: #666;
+  }
+}
+
+.empleados-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  
+}
+
+.empleado-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin-left: 2.5%;
+  background: #fffefe;
+  border-radius: 10px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.082);
+  width: 95%;
+
+  .empleado-info {
+    h4 {
+      margin: 0;
+      color: #333;
+      font-size: 14px;
+    }
+
+    p {
+      margin: 2px 0 0 0;
+      color: #666;
+      font-size: 12px;
+    }
+  }
+}
+
+ion-fab {
+  position: fixed !important;
+  z-index: 999;
+
+  &[vertical="bottom"] {
+    bottom: 20px;
+  }
+
+  &[horizontal="end"] {
+    right: 20px;
+  }
+
+  /* Estilo para el segundo botón FAB */
+  &:nth-of-type(2) {
+    bottom: 80px !important;
+    /* Ajusta este valor según el tamaño de tus botones */
+  }
+}
+
+.add {
+  --width: 150%;
+  --max-width: 600px;
+  --height: 50%;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  ion-toolbar {
+    --background: #A9C0D3;
+    --color: #36454F;
+  }
+
+  ion-item {
+    --background: rgb(241, 241, 241);
+    color: #36454F;
+    border-radius: 20px;
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 3%;
+
+    ion-label {
+      color: #36454F;
+    }
+  }
+
+  ion-datetime {
+    --background: rgb(241, 241, 241);
+    --border-radius: 12px;
+  }
+}
+
+/* Estilo para el botón de búsqueda */
+.search-button {
+  --background: #E8B0B0;
+  --border-radius: 50% !important;
+  width: 40px;
+  height: 40px;
+  margin-left: 93%;
+  margin-top: -6%;
+  margin-bottom: 5%;
+  margin-right: 8px;
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+/* Estilo para el searchbar desplegado */
+.animated-searchbar {
+  --background: white;
+  --color: #36454F; /* Color del texto */
+  --border-radius: 25px !important;
+  --box-shadow: none;
+  --cancel-button-color: #36454F;
+  
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animación de aparición */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Ajustes para el icono de búsqueda dentro del searchbar */
+.animated-searchbar .searchbar-search-icon {
+  color: #E8B0B0 !important;
+}
+
+.user {
+  --width: 150%;
+  --max-width: 700px;
+  --height: 60%;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  ion-toolbar {
+    --background: #A9C0D3;
+    --color: #36454F;
+  }
+
+  ion-item {
+    --background: rgb(241, 241, 241);
+    color: #36454F;
+    border-radius: 20px;
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 3%;
+
+    ion-label {
+      color: #36454F;
+    }
+  }
+
+  ion-datetime {
+    --background: rgb(241, 241, 241);
+    --border-radius: 12px;
   }
 }
