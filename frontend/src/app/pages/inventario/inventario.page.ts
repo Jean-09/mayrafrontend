@@ -102,14 +102,16 @@ export class InventarioPage implements OnInit {
 async loadResumenInventario() {
   await this.api.getInventario(this.token).then((res) => {
     const allInventario = res.data.data;
+    console.log(allInventario)
 
     let filteredInventario = [...allInventario];
 
     // Filtrado idéntico al ejemplo de pedidos
     if (this.currentUser?.role.name === 'empleado' && this.currentUser.sucursal) {
       filteredInventario = filteredInventario.filter(
-        item => item.sucursal.documentId === this.currentUser?.sucursal?.documentId
+        item => item.sucursal?.documentId === this.currentUser?.sucursal?.documentId
       );
+      console.log(filteredInventario)
     } else if ((this.currentUser?.role.name === 'admin' || this.currentUser?.role.name === 'central') && this.selectedSucursal) {
       filteredInventario = filteredInventario.filter(
         item => item.sucursal?.documentId === this.selectedSucursal
@@ -145,8 +147,8 @@ onSucursalChange() {
       tipo_movimiento: tipo,
       cantidad: item.cantidad,
       observaciones: item.observaciones,
-      sucursal: item.documentId,
-      id: item.sucursal?.documentId
+      sucursal: item.sucursal?.documentId,
+      id: item.documentId
     };
     this.showMovimientoModal = true;
   }
@@ -184,7 +186,7 @@ onSucursalChange() {
 async registrarMovimiento() {
    try {
     // Preparar datos para la API
-    const id =this.movimientoData.sucursal;
+    const id =this.movimientoData.id;
     const data = {
       
       cantidad: this.movimientoData.cantidad,

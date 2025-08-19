@@ -112,8 +112,12 @@ filterUsuarios() {
   console.log('Resultados filtrados:', this.usersFiltrados);
 }
 
-  verDetalle(pedido: any) {
-    this.router.navigate(['/detalle-pedido', pedido.documentId]);
+    verDetalle(pedido: any) {
+    this.router.navigate(['/pedido-detalle'], {
+      state: {
+        pedidos: pedido
+      }
+    })
   }
 
   async agregarPersonal() {
@@ -190,7 +194,7 @@ filterUsuarios() {
       // 2. Pedidos recientes (últimos 5 pedidos)
       this.pedidosRecientes = pedidos
         .sort((a: any, b: any) =>
-          new Date(b.fecha_creacion || 0).getTime() - new Date(a.fecha_creacion || 0).getTime()
+          new Date(b.fecha || 0).getTime() - new Date(a.fecha || 0).getTime()
         )
         .slice(0, 4); // Tomamos los 5 más recientes
       console.log(this.pedidosRecientes)

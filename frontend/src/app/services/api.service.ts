@@ -141,14 +141,15 @@ export class ApiService {
     return axios.put(this.url + '/inventarios/' + id, { data }, { headers: options })
   }
 
-  // Inventario
-  getInventario(token: string) {
-    let options = new AxiosHeaders({
-      'Authorization': 'Bearer ' + token
-    });
-    const res = axios.get(this.url + '/inventarios?populate=*', { headers: options });
-    return res
-  }
+getInventario(token: string) {
+  let options = new AxiosHeaders({
+    'Authorization': 'Bearer ' + token
+  });
+  // Usa paginación con un límite alto (ej. 1000)
+  const res = axios.get(this.url + '/inventarios?pagination[pageSize]=1000&populate=*', { headers: options });
+  return res;
+}
+  
    getUsers(token: string) {
     let options = new AxiosHeaders({
       'Authorization': 'Bearer ' + token
@@ -210,6 +211,15 @@ export class ApiService {
       throw error; // Propaga el error para manejo externo
     }
   }
+
+// Ejemplo de cómo debería ser tu servicio
+putEstado(pedido: any, nuevoEstado: string, token: string){
+  return axios.put(`${this.url}/pedidos/${pedido.documentId}`, {data:{estado: nuevoEstado}}, {
+    headers: new AxiosHeaders({
+      'Authorization': `Bearer ${token}`
+    })
+  });
+}
 
   postPediodos(token: string, data: any) {
     let options = new AxiosHeaders({

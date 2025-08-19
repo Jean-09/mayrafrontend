@@ -225,7 +225,7 @@ export class DetallePedidoPage implements OnInit {
       const nuevoNumero = ultimoNumero + 1;
       // 1. Crear primero el pedido (sin prendas)
       const Data = {
-        sucursal: this.pedido.sucursal?.documentId,
+        sucursal: this.currentUser.sucursal?.documentId,
         fecha: this.pedido.fecha,
         estado: this.pedido.estado,
         observaciones: this.pedido.observaciones,

@@ -38,7 +38,7 @@ export class PedidosPage implements OnInit {
     await this.storage.create();
     await this.getToken();
     await this.loadSucursales();
-    
+
 
     // Obtén el token y el usuario guardados
     const tokenData = await this.storage.get('token');
@@ -92,37 +92,37 @@ export class PedidosPage implements OnInit {
     })
   }
 
-  verPedidos:any[]=[]
+  verPedidos: any[] = []
 
-async loadPedidos() {
-  await this.api.getAllPedidos(this.token).then((res) => {
-    this.verPedidos = res
-    const allPedidos = res;
-    console.log(allPedidos)
+  async loadPedidos() {
+    await this.api.getAllPedidos(this.token).then((res) => {
+      this.verPedidos = res
+      const allPedidos = res;
+      console.log(allPedidos)
 
-    let filteredPedidos = [...allPedidos];
+      let filteredPedidos = [...allPedidos];
 
-    // Filtrado seguro para empleados
-    if (this.currentUser?.role?.name === 'empleado' && this.currentUser?.sucursal?.documentId) {
-      filteredPedidos = filteredPedidos.filter(p => 
-        p?.sucursal?.documentId === this.currentUser?.sucursal?.documentId
-      );
-    } 
-    // Filtrado seguro para admin/central
-    else if ((this.currentUser?.role?.name === 'admin' || this.currentUser?.role?.name === 'central') && this.selectedSucursal) {
-      filteredPedidos = filteredPedidos.filter(p => 
-        p?.sucursal?.documentId === this.selectedSucursal
-      );
-    }
+      // Filtrado seguro para empleados
+      if (this.currentUser?.role?.name === 'empleado' && this.currentUser?.sucursal?.documentId) {
+        filteredPedidos = filteredPedidos.filter(p =>
+          p?.sucursal?.documentId === this.currentUser?.sucursal?.documentId
+        );
+      }
+      // Filtrado seguro para admin/central
+      else if ((this.currentUser?.role?.name === 'admin' || this.currentUser?.role?.name === 'central') && this.selectedSucursal) {
+        filteredPedidos = filteredPedidos.filter(p =>
+          p?.sucursal?.documentId === this.selectedSucursal
+        );
+      }
 
-    this.pedidos = filteredPedidos;
-    this.applyCurrentFilters();
-    
-  }).catch((error) => {
-    console.log(error);
-    this.pedidos = []; // Asegurar array vacío en caso de error
-  });
-}
+      this.pedidos = filteredPedidos;
+      this.applyCurrentFilters();
+
+    }).catch((error) => {
+      console.log(error);
+      this.pedidos = []; // Asegurar array vacío en caso de error
+    });
+  }
 
   applyCurrentFilters() {
     let filtered = [...this.pedidos];
@@ -238,11 +238,78 @@ async loadPedidos() {
     }
   }
 
+  async toggleStatus(pedido: any) {
+  console.log(pedido)
+  const userRole = this.currentUser.role.name;
+  const userSucursalId = this.currentUser.sucursal?.documentId;
+  const pedidoSucursalId = pedido.sucursal?.documentId;
+
+  // Validaciones de estado y permisos
+  if (pedido.estado === 'En proceso') {
+    if (userRole !== 'admin') {
+      console.log('Solo central puede cambiar pedidos en espera');
+      return;
+    }
+    pedido.estado = 'En camino';
+  } 
+
+  else if (pedido.estado === 'En camino') {
+    if (userRole !== 'empleado') {
+      console.log('Solo empleados pueden marcar como entregado');
+      return;
+    }
+    if (userSucursalId !== pedidoSucursalId) {
+      console.log('Solo puedes cambiar pedidos de tu sucursal');
+      return;
+    }
+    pedido.estado = 'Entregado';
+  }
+  else if (pedido.estado === 'Entregado') {
+    console.log('El pedido ya fue entregado, no se puede cambiar');
+    return;
+  }
+
+  try {
+    const res = await this.api.putEstado(pedido, pedido.estado, this.token);
+    console.log('Estado cambiado:', res);
+    this.loadPedidos();
+  } catch (error) {
+    console.error('Error al cambiar estado:', error);
+    // Revertir el cambio en caso de error
+    if (pedido.estado === 'En camino') pedido.estado = 'En espera';
+    else if (pedido.estado === 'Entregado') pedido.estado = 'En camino';
+  }
+}
+
+canChangeStatus(pedido: any): boolean {
+  const userRole = this.currentUser.role.name;
+  const userSucursalId = this.currentUser.sucursal?.documentId;
+  const pedidoSucursalId = pedido.sucursal?.documentId;
+
+  if (pedido.estado === 'En proceso') {
+    return userRole === 'central';
+  }
+  else if (pedido.estado === 'En camino') {
+    return userRole === 'empleado' && userSucursalId === pedidoSucursalId;
+  }
+  return false;
+}
+
+getButtonText(estado: string): string {
+  switch(estado) {
+    case 'En proceso': return 'Marcar como En camino';
+    case 'En camino': return 'Marcar como Entregado';
+    case 'Entregado': return 'Entregado';
+    default: return 'Estado desconocido';
+  }
+}
+
+
   crearPedido() {
     this.router.navigate(['/detalle-pedido']);
   }
 
-  verDetalle(pedido:any) {
+  verDetalle(pedido: any) {
     this.router.navigate(['/pedido-detalle'], {
       state: {
         pedidos: pedido

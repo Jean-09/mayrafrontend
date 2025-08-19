@@ -11,7 +11,7 @@
   <div class="inventario-container">
     <!-- Selector de sucursal para admin -->
 
-     <ion-fab vertical="bottom" horizontal="end" *ngIf="currentUser?.role.name !== 'central'" >
+    <ion-fab vertical="bottom" horizontal="end" *ngIf="currentUser?.role.name !== 'central'">
       <ion-fab-button (click)="showAddModal = true" style="--background:#E8B0B0;">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
@@ -31,7 +31,7 @@
 
     <!-- Información de sucursal actual -->
     <div class="sucursal-info" *ngIf="currentSucursalName">
-      <h3>Inventario de: {{ currentSucursalName }}</h3>
+      <h3>Inventario de: {{ currentUser.sucursal.name || 'sin datos' }}</h3>
     </div>
 
     <!-- Filtros -->
@@ -49,15 +49,15 @@
         <div class="resumen-card" *ngFor="let item of resumenInventario">
           <div class="item-info">
             <h3>{{ item.producto }}</h3>
-            <span [style.color]="item.cantidad < 5 ? 'red' : '#36454F'">  <!-- Usa tu color de texto normal -->
-  {{ item.cantidad }}
-</span>
+            <span [style.color]="item.cantidad < 5 ? 'red' : '#36454F'"> <!-- Usa tu color de texto normal -->
+              {{ item.cantidad }}
+            </span>
             <p class="last-movement">
               Último movimiento: {{ item.fecha | date:'short' }}
             </p>
           </div>
           <div class="item-actions">
-            <ion-button fill="clear" size="small" (click)="openMovimientoModal(item, 'entrada')" >
+            <ion-button fill="clear" size="small" (click)="openMovimientoModal(item, 'entrada')">
               <ion-icon name="arrow-up-outline"></ion-icon>
             </ion-button>
             <ion-button fill="clear" color="danger" size="small" (click)="openMovimientoModal(item, 'salida')">
@@ -118,7 +118,7 @@
             <ion-textarea [(ngModel)]="nuevoProducto.observaciones" rows="3"></ion-textarea>
           </ion-item>
 
-          <div class="modal-actions" >
+          <div class="modal-actions">
             <ion-button expand="block" (click)="agregarProducto()" style="    --background: #E8B0B0; --color: #708090;">
               Agregar Producto
             </ion-button>
